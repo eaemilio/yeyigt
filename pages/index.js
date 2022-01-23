@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../utils/supabaseClient';
 import Auth from '../components/Auth';
+import { supabase } from '../utils/supabaseClient';
 
 export default function Home() {
     const [session, setSession] = useState(null);

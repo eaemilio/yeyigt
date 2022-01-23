@@ -2,7 +2,6 @@ import Link from 'next/link';
 import React, { useEffect } from 'react';
 import ProfileAvatar from '../ProfileAvatar';
 import { useRouter } from 'next/router';
-import { useAuthSession } from '../../lib/hooks';
 
 export default function Dashboard(props) {
     const { pathname } = useRouter();
@@ -54,6 +53,29 @@ export default function Dashboard(props) {
                             />
                         </svg>
                         Productos
+                    </a>
+                </Link>
+                <Link href="/profile">
+                    <a
+                        className={`font-lg my-3 rounded-3xl py-3 px-6 text-sm flex items-center ${
+                            current === 'profile' ? 'bg-red-400 text-white' : 'bg-gray-50 text-zinc-800'
+                        }`}
+                    >
+                        <svg
+                            className="w-5 h-5 mr-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                            />
+                        </svg>
+                        Perfil
                     </a>
                 </Link>
             </div>

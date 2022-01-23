@@ -18,7 +18,7 @@ function MyApp({ Component, pageProps }) {
                 />
             </Head>
             <SessionContext.Provider value={{ session }}>
-                {session ? (
+                {session?.user ? (
                     <Dashboard>
                         <Component {...pageProps} />
                         <Toaster position="bottom-right" />

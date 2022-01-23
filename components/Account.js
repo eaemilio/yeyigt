@@ -76,24 +76,39 @@ export default function Account({ session }) {
     }
 
     return (
-        <div className="form-widget">
-            <h1 className="text-3xl font-bold underline">Hello world!</h1>
+        <div className="max-w-md w-full mx-auto">
             <div>
-                <label htmlFor="email">Email</label>
-                <input id="email" type="text" value={session.user.email} disabled />
+                <label htmlFor="email" className="block my-2 uppercase text-xs font-bold text-zinc-500 tracking-wide">
+                    Email
+                </label>
+                <input
+                    id="email"
+                    type="text"
+                    value={session.user.email}
+                    disabled
+                    className="w-full bg-gray-200 py-3 px-5 outline-none rounded-lg text-zinc-500 tracking-wide"
+                />
             </div>
             <div>
-                <label>First Name</label>
-                <input value={firstName || ''} onChange={(e) => setFirstName(e.target.value)} />
+                <label className="block my-2 uppercase text-xs font-bold text-zinc-500 tracking-wide">First Name</label>
+                <input
+                    value={firstName || ''}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    className="w-full bg-gray-200 py-3 px-5 outline-none rounded-lg text-zinc-500 tracking-wide"
+                />
             </div>
             <div>
-                <label>Last Name</label>
-                <input value={lastName || ''} onChange={(e) => setLastName(e.target.value)} />
+                <label className="block my-2 uppercase text-xs font-bold text-zinc-500 tracking-wide">Last Name</label>
+                <input
+                    value={lastName || ''}
+                    onChange={(e) => setLastName(e.target.value)}
+                    className="w-full bg-gray-200 py-3 px-5 outline-none rounded-lg text-zinc-500 tracking-wide"
+                />
             </div>
 
             <div>
                 <button
-                    className="button block primary"
+                    className="font-bold bg-red-200 rounded-lg text-red-400 px-30 py-3 w-full mt-20 hover:bg-red-100 ease-in-out duration-300 disabled:bg-gray-300 disabled:text-gray-400"
                     onClick={() =>
                         updateProfile({
                             avatar_url,
@@ -104,13 +119,16 @@ export default function Account({ session }) {
                     }
                     disabled={loading}
                 >
-                    {loading ? 'Loading ...' : 'Update'}
+                    {loading ? 'Cargando...' : 'Guardar Cambios'}
                 </button>
             </div>
 
             <div>
-                <button className="button block" onClick={() => logOut()}>
-                    Sign Out
+                <button
+                    className="font-bold bg-red-500 rounded-lg text-red-800 px-30 py-3 w-full mt-4 hover:bg-red-400 ease-in-out duration-300 disabled:bg-gray-800 disabled:text-gray-900"
+                    onClick={() => logOut()}
+                >
+                    Cerrar Sesión
                 </button>
             </div>
         </div>
