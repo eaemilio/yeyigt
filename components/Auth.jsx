@@ -8,7 +8,10 @@ export default function Auth() {
     const handleLogin = async (email) => {
         try {
             setLoading(true);
-            const { error } = await supabase.auth.signIn({ email });
+            const { error } = await supabase.auth.signIn(
+                { email },
+                { redirectTo: process.env.NEXT_PUBLIC_SUPABASE_REDIRECT_URL },
+            );
             if (error) throw error;
             alert('Check your email for the login link!');
         } catch (error) {
