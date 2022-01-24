@@ -92,7 +92,7 @@ export default function NewProduct() {
                         <input
                             placeholder="Identifica el accesorio"
                             name="description"
-                            className="w-full bg-gray-200 py-3 px-5 outline-none rounded-lg text-zinc-500 tracking-wide"
+                            className="w-full bg-zinc-200 py-3 px-5 outline-none rounded-lg text-zinc-500 tracking-wide"
                             value={description || ''}
                             onChange={(e) => setDescription(e.target.value)}
                         />

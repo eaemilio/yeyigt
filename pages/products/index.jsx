@@ -1,40 +1,72 @@
+import moment from 'moment';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { formatDate } from '../../utils/helpers';
+import Select from '../../components/ui/Select';
+import { DEFAULT_PAGE_SIZE, MONTHS } from '../../utils/constants';
+import { formatDate, getPageCount, getPagination, getYearsRange } from '../../utils/helpers';
 import { supabase } from '../../utils/supabaseClient';
 
 export default function Products() {
     const [products, setProducts] = useState([]);
+    const [monthSelected, setMonthSelected] = useState(moment().month() + 1);
+    const [yearSelected, setYearSelected] = useState(moment().year());
+    const [years, setYears] = useState([]);
+    const [pageCount, setPageCount] = useState(1);
+    const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
-        getProducts();
+        const currentYear = moment().year();
+        const range = getYearsRange(currentYear);
+        setYears(range);
     }, []);
 
-    async function getProducts() {
-        const { data: products, error } = await supabase
+    useEffect(() => {
+        getProducts(monthSelected, yearSelected, currentPage);
+    }, [currentPage, monthSelected, yearSelected]);
+
+    async function getProducts(month, year, page) {
+        const { from, to } = getPagination({ page });
+        const {
+            data: products,
+            error,
+            count,
+        } = await supabase
             .from('products')
             .select(
                 `
-          id,
-          product_types (
-            type
-          ),
-          description,
-          price,
-          created_at,
-          available
-        `,
+                  id,
+                  product_types (
+                    type
+                  ),
+                  description,
+                  price,
+                  created_at,
+                  available
+              `,
+                { count: 'exact' },
             )
-            .gte('created_at', '2022-01-01')
-            .lte('created_at', '2022-01-31');
+            .gte('created_at', `${year}-${month}-01`)
+            .lte('created_at', `${year}-${month}-${moment(`${year}-${month}`, 'YYYY-MM').daysInMonth()}`)
+            .range(from, to);
+        setPageCount(getPageCount(count));
         setProducts(products ?? []);
+    }
+
+    function onMonthChange(month) {
+        setMonthSelected(month);
+        getProducts(month, yearSelected);
+    }
+
+    function onYearChange(year) {
+        setYearSelected(year);
+        getProducts(monthSelected, year);
     }
 
     return (
         <>
-            <span className="text-2xl font-bold text-zinc-700 mb-10 flex justify-between items-center">
+            <span className="text-2xl font-bold text-zinc-700 mb-6 flex justify-between items-center">
                 Productos
-                <Link href="products/new">
+                <Link href="/products/new">
                     <a className="bg-red-400 rounded-full text-white p-4">
                         <svg
                             className="w-6 h-6"
@@ -53,7 +85,68 @@ export default function Products() {
                     </a>
                 </Link>
             </span>
-            <div className="flex flex-col mt-6">
+            <div className="w-full flex justify-between items-center">
+                <div className="flex mt-2 justify-end">
+                    <button
+                        className="mr-4 cursor-pointer rounded-full w-6 h-6 text-xs flex justify-center items-center"
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                        disabled={currentPage === 1}
+                    >
+                        <svg
+                            className={`w-4 h-4 ${currentPage === 1 ? 'stroke-zinc-300' : 'stroke-zinc-700'}`}
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                    {Array.from({ length: pageCount }, (_, i) => i + 1).map((n) => (
+                        <button
+                            key={n}
+                            className={`cursor-pointer rounded-full w-6 h-6 text-xs flex justify-center items-center ${
+                                currentPage === n
+                                    ? 'bg-red-400 text-white shadow-lg shadow-red-400/50'
+                                    : 'text-zinc-600'
+                            }`}
+                            onClick={() => setCurrentPage(n)}
+                        >
+                            {n}
+                        </button>
+                    ))}
+                    <button
+                        className="ml-4 cursor-pointer rounded-full w-6 h-6 text-xs flex justify-center items-center"
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        disabled={currentPage === pageCount}
+                    >
+                        <svg
+                            className={`w-4 h-4 ${currentPage === pageCount ? 'stroke-zinc-300' : 'stroke-zinc-700'}`}
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                </div>
+                <div className="flex gap-2">
+                    <Select label="Año" value={yearSelected} onChange={(year) => onYearChange(+year)}>
+                        {years.map((y) => (
+                            <option key={y} value={y}>
+                                {y}
+                            </option>
+                        ))}
+                    </Select>
+                    <Select label="Mes" value={monthSelected} onChange={(mo) => onMonthChange(+mo)}>
+                        {MONTHS.map((m, i) => (
+                            <option key={i} value={i + 1}>
+                                {m}
+                            </option>
+                        ))}
+                    </Select>
+                </div>
+            </div>
+            <div className="flex flex-col mt-2">
                 <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                     <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
                         <div className="overflow-hidden sm:rounded-lg">

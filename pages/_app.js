@@ -4,6 +4,7 @@ import { useAuthSession } from '../lib/hooks';
 import Head from 'next/head';
 import Dashboard from '../components/dashboard/Dashboard';
 import { Toaster } from 'react-hot-toast';
+import AuthCheck from '../components/AuthCheck';
 
 function MyApp({ Component, pageProps }) {
     const session = useAuthSession();
@@ -18,14 +19,12 @@ function MyApp({ Component, pageProps }) {
                 />
             </Head>
             <SessionContext.Provider value={{ session }}>
-                {session?.user ? (
-                    <Dashboard>
+                <Dashboard>
+                    <AuthCheck>
                         <Component {...pageProps} />
                         <Toaster position="bottom-right" />
-                    </Dashboard>
-                ) : (
-                    <Component {...pageProps} />
-                )}
+                    </AuthCheck>
+                </Dashboard>
             </SessionContext.Provider>
         </div>
     );
