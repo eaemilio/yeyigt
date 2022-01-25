@@ -4,18 +4,18 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import Select from '../../components/ui/Select';
-import { DEFAULT_PAGE_SIZE, MONTHS } from '../../utils/constants';
-import { formatDate, getPageCount, getPagination, getYearsRange } from '../../utils/helpers';
+import { MONTHS } from '../../utils/constants';
+import { getPageCount, getPagination, getYearsRange } from '../../utils/helpers';
 import { supabase } from '../../utils/supabaseClient';
 
-export default function Products() {
-    const [products, setProducts] = useState([]);
+export default function Sales() {
+    const [isLoading, setIsLoading] = useState(false);
     const [monthSelected, setMonthSelected] = useState(moment().month() + 1);
     const [yearSelected, setYearSelected] = useState(moment().year());
     const [years, setYears] = useState([]);
     const [pageCount, setPageCount] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
-    const [isLoading, setIsLoading] = useState(false);
+    const [sales, setSales] = useState([]);
 
     useEffect(() => {
         const currentYear = moment().year();
@@ -24,52 +24,59 @@ export default function Products() {
     }, []);
 
     useEffect(() => {
-        getProducts(monthSelected, yearSelected, currentPage);
+        getSales(monthSelected, yearSelected, currentPage);
     }, [currentPage, monthSelected, yearSelected]);
 
-    async function getProducts(month, year, page) {
+    function onMonthChange(month) {
+        setMonthSelected(month);
+    }
+
+    function onYearChange(year) {
+        setYearSelected(year);
+    }
+
+    async function getSales(month, year, page) {
         try {
             setIsLoading(true);
             const { from, to } = getPagination({ page });
             const {
-                data: products,
+                data: sales,
                 error,
                 count,
             } = await supabase
-                .from('products')
+                .from('sales')
                 .select(
                     `
-                  id,
-                  product_types (
-                    type
-                  ),
-                  description,
-                  price,
-                  created_at,
-                  available
-              `,
+                      id,
+                      sale_price,
+                      created_at,
+                      note,
+                      client,
+                      products (
+                        description,
+                        id,
+                        price
+                      ),
+                      profiles (
+                        id,
+                        first_name,
+                        last_name,
+                        avatar_url
+                      )
+                  `,
                     { count: 'exact' },
                 )
                 .gte('created_at', `${year}-${month}-01`)
                 .lte('created_at', `${year}-${month}-${moment(`${year}-${month}`, 'YYYY-MM').daysInMonth()}`)
                 .range(from, to);
             setPageCount(getPageCount(count));
-            setProducts(products ?? []);
+            setSales(sales ?? []);
         } catch (error) {
+            console.log(error);
             toast.error('Ocurrio un error, recarga para intentar de nuevo.');
         } finally {
             setIsLoading(false);
         }
-    }
-
-    function onMonthChange(month) {
-        setMonthSelected(month);
-        getProducts(month, yearSelected);
-    }
-
-    function onYearChange(year) {
-        setYearSelected(year);
-        getProducts(monthSelected, year);
     }
 
     return (
@@ -82,8 +89,8 @@ export default function Products() {
                 <Image src="/loading.svg" width={120} height={120} alt="loading-indicator" />
             </div>
             <span className="text-2xl font-bold text-zinc-700 mb-6 flex justify-between items-center">
-                Productos
-                <Link href="/products/new">
+                Ventas
+                <Link href="/sales/new">
                     <a className="bg-red-400 rounded-full text-white p-4">
                         <svg
                             className="w-6 h-6"
@@ -174,37 +181,37 @@ export default function Products() {
                                             scope="col"
                                             className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                                         >
-                                            Código
+                                            Producto
                                         </th>
                                         <th
                                             scope="col"
                                             className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                                         >
-                                            Tipo
+                                            Descripción Producto
                                         </th>
                                         <th
                                             scope="col"
                                             className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                                         >
-                                            Descripción
+                                            Vendedor(a)
                                         </th>
                                         <th
                                             scope="col"
                                             className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                                         >
-                                            Precio
+                                            Valor Producto
                                         </th>
                                         <th
                                             scope="col"
                                             className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                                         >
-                                            Fecha Agregado
+                                            Precio de Venta
                                         </th>
                                         <th
                                             scope="col"
                                             className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                                         >
-                                            Estado
+                                            Cliente
                                         </th>
                                         <th scope="col" className="relative px-6 py-4">
                                             <span className="sr-only">Edit</span>
@@ -212,41 +219,33 @@ export default function Products() {
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-50">
-                                    {products.map((product) => (
-                                        <tr key={product.id}>
+                                    {sales.map((sale) => (
+                                        <tr key={sale.id}>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="flex items-center">
                                                     <div className="ml-4">
                                                         <div className="text-sm font-medium text-zinc-800">
-                                                            {product.id}
+                                                            {sale.products.id}
                                                         </div>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="text-sm text-zinc-800">
-                                                    {product.product_types.type}
-                                                </div>
+                                                <div className="text-sm text-zinc-800">{sale.products.description}</div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="text-sm text-zinc-800">{product.description}</div>
+                                                <div className="text-sm text-zinc-800">
+                                                    {sale.profiles.first_name} {sale.profiles.last_name}
+                                                </div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-zinc-800">
-                                                Q{product.price.toFixed(2)}
+                                                Q{sale.products.price.toFixed(2)}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-zinc-800">
-                                                {formatDate(product.created_at)}
+                                                Q{sale.sale_price.toFixed(2)}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-zinc-800">
-                                                <span
-                                                    className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                                        product.available
-                                                            ? 'bg-green-100 text-green-800'
-                                                            : 'bg-red-100 text-red-800'
-                                                    }`}
-                                                >
-                                                    {product.available ? 'Disponible' : 'Vendido'}
-                                                </span>
+                                                {sale.client}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                 <a href="#" className="text-red-300 hover:text-red-400">

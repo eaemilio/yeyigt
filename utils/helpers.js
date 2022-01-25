@@ -24,5 +24,8 @@ export const getPagination = ({ page, size = DEFAULT_PAGE_SIZE }) => {
 };
 
 export const getPageCount = (count, pageSize = DEFAULT_PAGE_SIZE) => {
+    if (count === 0) {
+        return 1;
+    }
     return count % pageSize === 0 ? count / pageSize : ~~(count / pageSize) + 1;
 };
