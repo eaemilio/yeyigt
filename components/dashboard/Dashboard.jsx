@@ -8,13 +8,26 @@ import { supabase } from '../../utils/supabaseClient';
 export default function Dashboard(props) {
     const { pathname } = useRouter();
     const [current, setCurrent] = useState('');
+    const [productCount, setProductCount] = useState(0);
     const [isSignedIn, setIsSignedIn] = useState(true);
     const { session } = useContext(SessionContext);
 
     useEffect(() => {
         setIsSignedIn(!!session.access_token);
         setCurrent(pathname.split('/')[1]);
+        getProductsCount();
+        supabase
+            .from('products')
+            .on('*', () => {
+                getProductsCount();
+            })
+            .subscribe();
     }, [session, pathname]);
+
+    async function getProductsCount() {
+        const { count } = await supabase.from('products').select('id', { count: 'exact' }).eq('available', true);
+        setProductCount(count);
+    }
 
     function logout() {
         supabase.auth.signOut();
@@ -45,7 +58,7 @@ export default function Dashboard(props) {
                     </Link>
                     <Link href="/products">
                         <a
-                            className={`font-lg my-5 rounded-full py-3 px-6 text-sm flex items-center ease-in-out duration-300 ${
+                            className={`relative font-lg my-5 rounded-full py-3 px-6 text-sm flex items-center ease-in-out duration-300 ${
                                 current === 'products'
                                     ? 'bg-red-400 text-white shadow-lg shadow-red-400/50'
                                     : 'bg-gray-50 text-zinc-800'
@@ -64,6 +77,9 @@ export default function Dashboard(props) {
                                 />
                             </svg>
                             Productos
+                            <div className="flex w-6 h-6 text-xs items-center justify-center bg-white text-red-400 rounded-full absolute right-8 top-50">
+                                {productCount}
+                            </div>
                         </a>
                     </Link>
                     <Link href="/sales">
