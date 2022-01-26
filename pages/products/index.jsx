@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import Select from '../../components/ui/Select';
-import { DEFAULT_PAGE_SIZE, MONTHS } from '../../utils/constants';
+import { AVAILABLE, DEFAULT_PAGE_SIZE, MONTHS, PRODUCT_STATUS } from '../../utils/constants';
 import { formatDate, getPageCount, getPagination, getYearsRange } from '../../utils/helpers';
 import { supabase } from '../../utils/supabaseClient';
 
@@ -46,7 +46,7 @@ export default function Products() {
                   description,
                   price,
                   created_at,
-                  available
+                  status
               `,
                     { count: 'exact' },
                 )
@@ -240,12 +240,12 @@ export default function Products() {
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-zinc-800">
                                                 <span
                                                     className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                                        product.available
+                                                        product.status === AVAILABLE
                                                             ? 'bg-green-100 text-green-800'
                                                             : 'bg-red-100 text-red-800'
                                                     }`}
                                                 >
-                                                    {product.available ? 'Disponible' : 'Vendido'}
+                                                    {PRODUCT_STATUS[product.status]}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

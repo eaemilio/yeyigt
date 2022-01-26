@@ -1,8 +1,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import TitleNav from '../../components/ui/Title';
+import { useAuthSession } from '../../lib/hooks';
+import { SOLD } from '../../utils/constants';
 import { supabase } from '../../utils/supabaseClient';
 
 export default function NewSale() {
@@ -13,6 +16,8 @@ export default function NewSale() {
     const [client, setClient] = useState('');
     const [note, setNote] = useState('');
     const [productType, setProductType] = useState('');
+    const router = useRouter();
+    const { userMeta } = useAuthSession();
 
     useEffect(() => {
         if (product) {
@@ -75,7 +80,7 @@ export default function NewSale() {
             if (error) {
                 return Promise.reject();
             }
-            const { error: errorP } = await setProductStatus(product.id, false);
+            const { error: errorP } = await setProductStatus(product.id, SOLD);
             if (errorP) {
                 return Promise.reject();
             }
@@ -90,9 +95,17 @@ export default function NewSale() {
         }
     }
 
-    async function setProductStatus(id, available) {
-        const { data, error } = await supabase.from('products').update({ available }).eq('id', id);
+    async function setProductStatus(id, status) {
+        const { data, error } = await supabase.from('products').update({ status }).eq('id', id);
         return { error };
+    }
+
+    function goBack() {
+        if (!product) {
+            router.back();
+        } else {
+            setProduct(null);
+        }
     }
 
     return (
@@ -104,7 +117,7 @@ export default function NewSale() {
             >
                 <Image src="/loading.svg" width={120} height={120} alt="loading-indicator" />
             </div>
-            <TitleNav title="Nueva Venta" />
+            <TitleNav title="Nueva Venta" back={() => goBack()} showBack={userMeta?.roles?.id === 1 || !!product} />
             <div
                 className={`flex-1 flex flex-col justify-center w-full items-center mx-auto ${
                     !product ? 'max-w-xs' : 'max-w-md'

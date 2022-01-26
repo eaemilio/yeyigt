@@ -1,5 +1,11 @@
 import moment from 'moment';
 import 'moment/locale/es';
+import BraceletIcon from '../components/dashboard/icons/Bracelet';
+import EarringIcon from '../components/dashboard/icons/EarringIcon';
+import GroupIcon from '../components/dashboard/icons/GroupIcon';
+import RingIcon from '../components/dashboard/icons/RingIcon';
+import TagIcon from '../components/dashboard/icons/TagIcon';
+import NecklaceIcon from '../components/dashboard/NecklaceIcon';
 import { DEFAULT_PAGE_SIZE, MIN_YEAR } from './constants';
 
 export const formatDate = (date) => {
@@ -28,4 +34,23 @@ export const getPageCount = (count, pageSize = DEFAULT_PAGE_SIZE) => {
         return 1;
     }
     return count % pageSize === 0 ? count / pageSize : ~~(count / pageSize) + 1;
+};
+
+export const getTypeIcon = (id) => {
+    switch (id) {
+        case 2:
+            return BraceletIcon;
+        case 3:
+            return EarringIcon;
+        case 4:
+            return TagIcon;
+        case 5:
+            return GroupIcon;
+        case 6:
+            return RingIcon;
+        case 7:
+            return NecklaceIcon;
+        default:
+            return BraceletIcon;
+    }
 };
