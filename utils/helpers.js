@@ -9,7 +9,7 @@ import NecklaceIcon from '../components/dashboard/NecklaceIcon';
 import { DEFAULT_PAGE_SIZE, MIN_YEAR } from './constants';
 
 export const formatDate = (date) => {
-    return moment(date).format('dddd DD MMMM YYYY');
+    return moment(date).format('DD/MM/YYYY');
 };
 
 export const getYearsRange = (currentYear, minYear) => {

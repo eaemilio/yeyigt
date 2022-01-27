@@ -142,9 +142,9 @@ export default function Products() {
                 </Link>
             </span>
             <div className="w-full flex-col sm:flex-row flex justify-between items-center">
-                <div className="mb-6 sm:mb-0 relative w-fit h-fit shadow-lg shadow-zinc-400/10 rounded-full">
+                <div className="mb-6 sm:mb-0 relative w-full sm:w-fit h-fit shadow-lg shadow-zinc-400/10 rounded-full">
                     <input
-                        className="rounded-full bg-white b text-zinc-400 w-60 py-3 pl-6 pr-12 outline-none text-xs"
+                        className="rounded-full bg-white b text-zinc-400 w-full sm:w-60 py-3 pl-6 pr-12 outline-none text-xs"
                         placeholder="Busca un accesorio..."
                         onKeyDown={handleKeyDown}
                         value={searchText}
@@ -164,8 +164,13 @@ export default function Products() {
                         />
                     </svg>
                 </div>
-                <div className="flex gap-2">
-                    <Select label="Tipo" value={typeSelected} onChange={(type) => onTypeChange(+type)}>
+                <div className="flex gap-2 w-full sm:w-fit">
+                    <Select
+                        label="Tipo"
+                        value={typeSelected}
+                        onChange={(type) => onTypeChange(+type)}
+                        className="flex-1"
+                    >
                         <option value={0}>Todos</option>
                         {productTypes.map((t) => (
                             <option key={t.id} value={t.id}>
@@ -173,14 +178,19 @@ export default function Products() {
                             </option>
                         ))}
                     </Select>
-                    <Select label="Año" value={yearSelected} onChange={(year) => onYearChange(+year)}>
+                    <Select
+                        label="Año"
+                        value={yearSelected}
+                        onChange={(year) => onYearChange(+year)}
+                        className="flex-1"
+                    >
                         {years.map((y) => (
                             <option key={y} value={y}>
                                 {y}
                             </option>
                         ))}
                     </Select>
-                    <Select label="Mes" value={monthSelected} onChange={(mo) => onMonthChange(+mo)}>
+                    <Select label="Mes" value={monthSelected} onChange={(mo) => onMonthChange(+mo)} className="flex-1">
                         {MONTHS.map((m, i) => (
                             <option key={i} value={i + 1}>
                                 {m}
@@ -202,22 +212,22 @@ export default function Products() {
                                                     key={product.id}
                                                     className="bg-white flex flex-col flex-no wrap sm:table-row rounded-l-lg sm:rounded-none mb-2 sm:mb-0"
                                                 >
-                                                    <th className="p-4 sm:px-6 sm:py-4 text-left text-sm sm:text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <th className="p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider">
                                                         Código
                                                     </th>
-                                                    <th className="p-4 sm:px-6 sm:py-4 text-left text-sm sm:text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <th className="p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider">
                                                         Tipo
                                                     </th>
-                                                    <th className="p-4 sm:px-6 sm:py-4 text-left text-sm sm:text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <th className="h-20 sm:h-fit p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider">
                                                         Descripción
                                                     </th>
-                                                    <th className="p-4 sm:px-6 sm:py-4 text-left text-sm sm:text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <th className="p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider">
                                                         Precio
                                                     </th>
-                                                    <th className="p-4 sm:px-6 sm:py-4 text-left text-sm sm:text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <th className="p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider">
                                                         Fecha Agregado
                                                     </th>
-                                                    <th className="p-4 sm:px-6 sm:py-4 text-left text-sm sm:text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <th className="p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider">
                                                         Estado
                                                     </th>
                                                 </tr>
@@ -233,18 +243,18 @@ export default function Products() {
                                                     <td className="bg-white p-4 text-sm text-zinc-800">
                                                         {product.product_types?.type ?? ''}
                                                     </td>
-                                                    <td className="bg-white p-4 text-sm text-zinc-800">
+                                                    <td className="h-20 sm:h-fit bg-white p-4 text-sm text-zinc-800">
                                                         {product.description}
                                                     </td>
                                                     <td className="bg-white p-4 text-sm text-zinc-800">
                                                         Q{product.price.toFixed(2)}
                                                     </td>
-                                                    <td className="bg-white p-4 text-sm text-zinc-800">
+                                                    <td className="bg-white p-4 text-sm text-zinc-800 text-ellipsis overflow-hidden break-all">
                                                         {formatDate(product.created_at)}
                                                     </td>
                                                     <td className="bg-white p-4 text-sm text-zinc-800">
                                                         <span
-                                                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                                            className={`px-2 inline-flex text-xs leading-0 sm:leading-5 font-semibold rounded-full ${
                                                                 product.status === AVAILABLE
                                                                     ? 'bg-green-100 text-green-800'
                                                                     : 'bg-red-100 text-red-800'

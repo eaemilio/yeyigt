@@ -12,6 +12,7 @@ export default function Dashboard(props) {
     const [current, setCurrent] = useState('');
     const [productCount, setProductCount] = useState(0);
     const [isSignedIn, setIsSignedIn] = useState(true);
+    const [menuVisible, setMenuVisible] = useState(false);
     const { session } = useContext(SessionContext);
     const { userMeta } = useAuthSession();
 
@@ -38,11 +39,28 @@ export default function Dashboard(props) {
 
     return isSignedIn ? (
         <div className="w-full h-full bg-zinc-100 dark:bg-zinc-800 flex">
-            <div className="h-full w-1/4 max-w-xs min-w-fit border bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-700 py-24 px-6 hidden flex-col justify-between md:flex">
+            <div
+                className={`ease-in-out duration-300 h-screen w-screen md:w-1/4 md:max-w-xs md:min-w-fit border bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-700 py-24 px-6 absolute flex flex-col justify-between md:relative z-10 top-0 bottom-0 ${
+                    menuVisible ? 'left-0 right-0' : '-left-full right-full md:left-0 md:right-0'
+                }`}
+            >
+                <button
+                    className="md:hidden absolute right-10 top-10 rounded-full p-4 bg-zinc-100"
+                    onClick={() => setMenuVisible(false)}
+                >
+                    <svg className="w-6 h-6 fill-red-400" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            fillRule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clipRule="evenodd"
+                        />
+                    </svg>
+                </button>
                 <div>
                     {userMeta?.roles?.id === 1 && (
                         <Link href="/">
                             <a
+                                onClick={() => setMenuVisible(false)}
                                 className={`font-lg my-5 rounded-full py-3 px-6 text-sm flex items-center ease-in-out duration-300 ${
                                     current === ''
                                         ? 'bg-red-400 text-white shadow-lg shadow-red-400/50'
@@ -63,6 +81,7 @@ export default function Dashboard(props) {
                     )}
                     <Link href="/products">
                         <a
+                            onClick={() => setMenuVisible(false)}
                             className={`relative font-lg my-5 rounded-full py-3 px-6 text-sm flex items-center ease-in-out duration-300 ${
                                 current === 'products'
                                     ? 'bg-red-400 text-white shadow-lg shadow-red-400/50'
@@ -94,6 +113,7 @@ export default function Dashboard(props) {
                     {userMeta?.roles?.id === 1 && (
                         <Link href="/sales">
                             <a
+                                onClick={() => setMenuVisible(false)}
                                 className={`font-lg my-5 rounded-full py-3 px-6 text-sm flex items-center ease-in-out duration-300 ${
                                     current === 'sales'
                                         ? 'bg-red-400 text-white shadow-lg shadow-red-400/50'
@@ -119,6 +139,7 @@ export default function Dashboard(props) {
                     )}
                     <Link href="/profile">
                         <a
+                            onClick={() => setMenuVisible(false)}
                             className={`font-lg my-5 rounded-full py-3 px-6 text-sm flex items-center ease-in-out duration-300 ${
                                 current === 'profile'
                                     ? 'bg-red-400 text-white shadow-lg shadow-red-400/50'
@@ -162,10 +183,26 @@ export default function Dashboard(props) {
                     </button>
                 </div>
             </div>
-            <div className="h-full flex-1">
+            <div className="h-full flex-1 bg-zinc-100">
                 <div className="flex flex-col flex-1 h-full w-full">
                     <div className="bg-white dark:bg-zinc-700 flex justify-between items-center py-4 px-6 w-full">
-                        <div className="relative w-fit h-fit">
+                        <button
+                            className="block md:hidden p-3 rounded-full bg-zinc-100 flex items-center justify-center"
+                            onClick={() => setMenuVisible(true)}
+                        >
+                            <svg
+                                className="w-6 h-6 fill-red-400"
+                                viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    fillRule="evenodd"
+                                    d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                                    clipRule="evenodd"
+                                />
+                            </svg>
+                        </button>
+                        <div className="relative w-fit h-fit hidden md:block">
                             <input
                                 className="rounded-full bg-zinc-100 text-zinc-400 w-60 py-3 pl-6 pr-12 outline-none text-xs"
                                 placeholder="Busca un accesorio..."

@@ -110,49 +110,6 @@ export default function Sales() {
                 </Link>
             </span>
             <div className="w-full flex justify-between items-center">
-                <div className="flex mt-2 justify-end">
-                    <button
-                        className="mr-4 cursor-pointer rounded-full w-6 h-6 text-xs flex justify-center items-center"
-                        onClick={() => setCurrentPage(currentPage - 1)}
-                        disabled={currentPage === 1}
-                    >
-                        <svg
-                            className={`w-4 h-4 ${currentPage === 1 ? 'stroke-zinc-300' : 'stroke-zinc-700'}`}
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                        </svg>
-                    </button>
-                    {Array.from({ length: pageCount }, (_, i) => i + 1).map((n) => (
-                        <button
-                            key={n}
-                            className={`cursor-pointer rounded-full w-6 h-6 text-xs flex justify-center items-center ${
-                                currentPage === n
-                                    ? 'bg-red-400 text-white shadow-lg shadow-red-400/50'
-                                    : 'text-zinc-600'
-                            }`}
-                            onClick={() => setCurrentPage(n)}
-                        >
-                            {n}
-                        </button>
-                    ))}
-                    <button
-                        className="ml-4 cursor-pointer rounded-full w-6 h-6 text-xs flex justify-center items-center"
-                        onClick={() => setCurrentPage(currentPage + 1)}
-                        disabled={currentPage === pageCount}
-                    >
-                        <svg
-                            className={`w-4 h-4 ${currentPage === pageCount ? 'stroke-zinc-300' : 'stroke-zinc-700'}`}
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                    </button>
-                </div>
                 <div className="flex gap-2">
                     <Select label="Año" value={yearSelected} onChange={(year) => onYearChange(+year)}>
                         {years.map((y) => (
@@ -174,91 +131,110 @@ export default function Sales() {
                 <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                     <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
                         <div className="overflow-hidden sm:rounded-lg">
-                            <table className="min-w-full">
-                                <thead className="bg-white border-b border-b-zinc-100 py-10">
-                                    <tr>
-                                        <th
-                                            scope="col"
-                                            className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                        >
-                                            Producto
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                        >
-                                            Descripción Producto
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                        >
-                                            Vendedor(a)
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                        >
-                                            Valor Producto
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                        >
-                                            Precio de Venta
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                        >
-                                            Cliente
-                                        </th>
-                                        <th scope="col" className="relative px-6 py-4">
-                                            <span className="sr-only">Edit</span>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody className="bg-white divide-y divide-gray-50">
-                                    {sales.map((sale) => (
-                                        <tr key={sale.id}>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="flex items-center">
-                                                    <div className="ml-4">
-                                                        <div className="text-sm font-medium text-zinc-800">
-                                                            {sale.products.id}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="text-sm text-zinc-800">{sale.products.description}</div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="text-sm text-zinc-800">
-                                                    {sale.profiles.first_name} {sale.profiles.last_name}
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-zinc-800">
-                                                Q{sale.products.price.toFixed(2)}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-zinc-800">
-                                                Q{sale.sale_price.toFixed(2)}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-zinc-800">
-                                                {sale.client}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                <a href="#" className="text-red-300 hover:text-red-400">
-                                                    Editar
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                            <div className="flex items-center justify-center">
+                                <div className="container">
+                                    <table className="w-full flex flex-row flex-no-wrap sm:bg-white rounded-lg overflow-hidden sm:shadow-lg sm:shadow-zinc-100/10 my-5">
+                                        <thead className="sm:bg-white border-b border-b-zinc-100">
+                                            {sales.map((sale) => (
+                                                <tr
+                                                    key={sale.id}
+                                                    className="bg-white flex flex-col flex-no wrap sm:table-row rounded-l-lg sm:rounded-none mb-2 sm:mb-0"
+                                                >
+                                                    <th className="p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider">
+                                                        Producto
+                                                    </th>
+                                                    <th className="p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider">
+                                                        Descripción Producto
+                                                    </th>
+                                                    <th className="h-20 sm:h-fit p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider">
+                                                        Vendedor(a)
+                                                    </th>
+                                                    <th className="p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider">
+                                                        Valor Producto
+                                                    </th>
+                                                    <th className="p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider">
+                                                        Precio de Venta
+                                                    </th>
+                                                    <th className="p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider">
+                                                        Cliente
+                                                    </th>
+                                                </tr>
+                                            ))}
+                                        </thead>
+                                        <tbody className="flex-1 sm:flex-none">
+                                            {sales.map((sale) => (
+                                                <tr
+                                                    key={sale.id}
+                                                    className="rounded-r-xl bg-white overflow-hidden flex flex-col flex-no wrap sm:table-row mb-2 sm:mb-0"
+                                                >
+                                                    <td className="bg-white p-4 text-sm text-zinc-800">
+                                                        {sale.products.id}
+                                                    </td>
+                                                    <td className="h-20 sm:h-fit bg-white p-4 text-sm text-zinc-800">
+                                                        {sale.products.description}
+                                                    </td>
+                                                    <td className="bg-white p-4 text-sm text-zinc-800">
+                                                        {sale.profiles.first_name} {sale.profiles.last_name}
+                                                    </td>
+                                                    <td className="bg-white p-4 text-sm text-zinc-800 text-ellipsis overflow-hidden break-all">
+                                                        Q{sale.products.price.toFixed(2)}
+                                                    </td>
+                                                    <td className="bg-white p-4 text-sm text-zinc-800">
+                                                        Q{sale.sale_price.toFixed(2)}
+                                                    </td>
+                                                    <td className="bg-white p-4 text-sm text-zinc-800">
+                                                        {sale.client}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </div>
+            <div className="flex mt-2 justify-end">
+                <button
+                    className="mr-4 cursor-pointer rounded-full w-6 h-6 text-xs flex justify-center items-center"
+                    onClick={() => setCurrentPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                >
+                    <svg
+                        className={`w-4 h-4 ${currentPage === 1 ? 'stroke-zinc-300' : 'stroke-zinc-700'}`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+                {Array.from({ length: pageCount }, (_, i) => i + 1).map((n) => (
+                    <button
+                        key={n}
+                        className={`cursor-pointer rounded-full w-6 h-6 text-xs flex justify-center items-center ${
+                            currentPage === n ? 'bg-red-400 text-white shadow-lg shadow-red-400/50' : 'text-zinc-600'
+                        }`}
+                        onClick={() => setCurrentPage(n)}
+                    >
+                        {n}
+                    </button>
+                ))}
+                <button
+                    className="ml-4 cursor-pointer rounded-full w-6 h-6 text-xs flex justify-center items-center"
+                    onClick={() => setCurrentPage(currentPage + 1)}
+                    disabled={currentPage === pageCount}
+                >
+                    <svg
+                        className={`w-4 h-4 ${currentPage === pageCount ? 'stroke-zinc-300' : 'stroke-zinc-700'}`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
             </div>
         </>
     );

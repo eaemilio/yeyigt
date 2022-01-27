@@ -46,7 +46,7 @@ export default function Home() {
     }
 
     return (
-        <div className="flex flex-col flex-1 overflow-y-auto h-full w-full">
+        <div className="flex flex-col flex-1 h-full w-full">
             <span className="font-bold text-xl text-zinc-700 mb-4">Resumen</span>
             <div className="flex w-full gap-2 relative">
                 <Loading isLoading={isLoadingCount} className="rounded-2xl" />
