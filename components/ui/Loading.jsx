@@ -7,7 +7,7 @@ export default function Loading({ isLoading, className }) {
                 isLoading ? 'opacity-1' : 'opacity-0'
             } ${className}`}
         >
-            <Image src="/loading.svg" width={120} height={120} alt="loading-indicator" />
+            <Image src="/loading.svg" width={120} height={120} alt="loading-indicator" priority={true} />
         </div>
     );
 }

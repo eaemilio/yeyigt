@@ -18,6 +18,7 @@ export default function Products() {
     const [isLoading, setIsLoading] = useState(false);
     const [productTypes, setProductTypes] = useState([]);
     const [typeSelected, setTypeSelected] = useState(0);
+    const [searchText, setSearchText] = useState('');
 
     useEffect(() => {
         const currentYear = moment().year();
@@ -27,7 +28,14 @@ export default function Products() {
     }, []);
 
     useEffect(() => {
-        getProducts(monthSelected, yearSelected, currentPage, typeSelected, productTypes);
+        getProducts({
+            month: monthSelected,
+            year: yearSelected,
+            page: currentPage,
+            type: typeSelected,
+            types: productTypes,
+            search: '',
+        });
     }, [currentPage, monthSelected, yearSelected, typeSelected, productTypes]);
 
     async function getProductTypes() {
@@ -35,7 +43,7 @@ export default function Products() {
         setProductTypes(productTypes);
     }
 
-    async function getProducts(month, year, page, type, types = []) {
+    async function getProducts({ month, year, page, type, types, search }) {
         try {
             setIsLoading(true);
             const { from, to } = getPagination({ page });
@@ -60,6 +68,7 @@ export default function Products() {
               `,
                     { count: 'exact' },
                 )
+                .filter('id', `${search.trim() === '' ? 'not.eq' : 'eq'}`, `${search.trim() === '' ? '0' : search}`)
                 .in('type', typeFilter)
                 .gte('created_at', `${year}-${month}-01`)
                 .lte('created_at', `${year}-${month}-${moment(`${year}-${month}`, 'YYYY-MM').daysInMonth()}`)
@@ -68,22 +77,38 @@ export default function Products() {
             setPageCount(getPageCount(count));
             setProducts(products ?? []);
         } catch (error) {
-            toast.error('Ocurrio un error, recarga para intentar de nuevo.');
+            toast.error('Ocurrió un error, recarga para intentar de nuevo.');
         } finally {
             setIsLoading(false);
         }
     }
 
     function onMonthChange(month) {
+        setSearchText('');
         setMonthSelected(month);
     }
 
     function onYearChange(year) {
+        setSearchText('');
         setYearSelected(year);
     }
 
     function onTypeChange(type) {
+        setSearchText('');
         setTypeSelected(type);
+    }
+
+    function handleKeyDown(event) {
+        if (event.key === 'Enter') {
+            getProducts({
+                month: monthSelected,
+                year: yearSelected,
+                page: currentPage,
+                type: typeSelected,
+                types: productTypes,
+                search: searchText,
+            });
+        }
     }
 
     return (
@@ -117,6 +142,28 @@ export default function Products() {
                 </Link>
             </span>
             <div className="w-full flex justify-between items-center">
+                <div className="relative w-fit h-fit shadow-lg shadow-zinc-400/10 rounded-full">
+                    <input
+                        className="rounded-full bg-white b text-zinc-400 w-60 py-3 pl-6 pr-12 outline-none text-xs"
+                        placeholder="Busca un accesorio..."
+                        onKeyDown={handleKeyDown}
+                        value={searchText}
+                        onChange={(e) => setSearchText(e.target.value)}
+                    />
+                    <svg
+                        className="stroke-zinc-400 w-4 h-4 absolute top-1/2 right-4 translate-y-[-50%]"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                        />
+                    </svg>
+                </div>
                 <div className="flex gap-2">
                     <Select label="Tipo" value={typeSelected} onChange={(type) => onTypeChange(+type)}>
                         <option value={0}>Todos</option>

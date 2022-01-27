@@ -84,7 +84,7 @@ export default function Dashboard(props) {
                             Productos
                             <div
                                 className={`flex w-6 h-6 text-xs items-center justify-center rounded-full absolute right-8 top-50 ${
-                                    current === 'products' ? 'bg-white text-red-400' : 'bg-red-400 text-white'
+                                    current === 'products' ? 'text-white' : 'text-zinc-700'
                                 }`}
                             >
                                 {productCount}
