@@ -98,8 +98,8 @@ export default function NewProduct() {
                         />
                     </div>
                 </div>
-                <div className="flex w-full gap-3 mt-6">
-                    <div className="flex-2">
+                <div className="flex w-full gap-3 mt-6 flex-wrap-reverse">
+                    <div className="flex-3 w-full sm:w-fit">
                         <label
                             className="block my-2 uppercase text-xs font-bold text-zinc-500 tracking-wide"
                             htmlFor="price"
@@ -118,15 +118,15 @@ export default function NewProduct() {
                             />
                         </div>
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-1/2">
                         <label
-                            className="block my-2 uppercase text-xs font-bold text-zinc-500 tracking-wide"
+                            className="block my-2 uppercase text-xs font-bold text-zinc-500 tracking-wide flex-1"
                             htmlFor="description"
                         >
                             Tipo
                         </label>
                         <select
-                            className="form-select appearance-none block w-full px-5 py-3 text-base font-normal text-gray-700 bg-white bg-clip-padding bg-no-repeat rounded-lg transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
+                            className="form-select appearance-none block w-full px-5 py-3 text-base font-normal text-gray-700 bg-white bg-clip-padding bg-no-repeat rounded-lg transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none flex-1"
                             value={type}
                             onChange={(e) => setType(e.target.value)}
                         >
