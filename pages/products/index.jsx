@@ -16,21 +16,30 @@ export default function Products() {
     const [pageCount, setPageCount] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
+    const [productTypes, setProductTypes] = useState([]);
+    const [typeSelected, setTypeSelected] = useState(0);
 
     useEffect(() => {
         const currentYear = moment().year();
         const range = getYearsRange(currentYear);
         setYears(range);
+        getProductTypes();
     }, []);
 
     useEffect(() => {
-        getProducts(monthSelected, yearSelected, currentPage);
-    }, [currentPage, monthSelected, yearSelected]);
+        getProducts(monthSelected, yearSelected, currentPage, typeSelected, productTypes);
+    }, [currentPage, monthSelected, yearSelected, typeSelected, productTypes]);
 
-    async function getProducts(month, year, page) {
+    async function getProductTypes() {
+        const { data: productTypes, error } = await supabase.from('product_types').select('*');
+        setProductTypes(productTypes);
+    }
+
+    async function getProducts(month, year, page, type, types = []) {
         try {
             setIsLoading(true);
             const { from, to } = getPagination({ page });
+            const typeFilter = type === 0 ? [...types.map((p) => p.id)] : [type];
             const {
                 data: products,
                 error,
@@ -43,6 +52,7 @@ export default function Products() {
                   product_types (
                     type
                   ),
+                  type,
                   description,
                   price,
                   created_at,
@@ -50,8 +60,10 @@ export default function Products() {
               `,
                     { count: 'exact' },
                 )
+                .in('type', typeFilter)
                 .gte('created_at', `${year}-${month}-01`)
                 .lte('created_at', `${year}-${month}-${moment(`${year}-${month}`, 'YYYY-MM').daysInMonth()}`)
+                .order('id', { ascending: true })
                 .range(from, to);
             setPageCount(getPageCount(count));
             setProducts(products ?? []);
@@ -64,12 +76,14 @@ export default function Products() {
 
     function onMonthChange(month) {
         setMonthSelected(month);
-        getProducts(month, yearSelected);
     }
 
     function onYearChange(year) {
         setYearSelected(year);
-        getProducts(monthSelected, year);
+    }
+
+    function onTypeChange(type) {
+        setTypeSelected(type);
     }
 
     return (
@@ -103,50 +117,15 @@ export default function Products() {
                 </Link>
             </span>
             <div className="w-full flex justify-between items-center">
-                <div className="flex mt-2 justify-end">
-                    <button
-                        className="mr-4 cursor-pointer rounded-full w-6 h-6 text-xs flex justify-center items-center"
-                        onClick={() => setCurrentPage(currentPage - 1)}
-                        disabled={currentPage === 1}
-                    >
-                        <svg
-                            className={`w-4 h-4 ${currentPage === 1 ? 'stroke-zinc-300' : 'stroke-zinc-700'}`}
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                        </svg>
-                    </button>
-                    {Array.from({ length: pageCount }, (_, i) => i + 1).map((n) => (
-                        <button
-                            key={n}
-                            className={`cursor-pointer rounded-full w-6 h-6 text-xs flex justify-center items-center ${
-                                currentPage === n
-                                    ? 'bg-red-400 text-white shadow-lg shadow-red-400/50'
-                                    : 'text-zinc-600'
-                            }`}
-                            onClick={() => setCurrentPage(n)}
-                        >
-                            {n}
-                        </button>
-                    ))}
-                    <button
-                        className="ml-4 cursor-pointer rounded-full w-6 h-6 text-xs flex justify-center items-center"
-                        onClick={() => setCurrentPage(currentPage + 1)}
-                        disabled={currentPage === pageCount}
-                    >
-                        <svg
-                            className={`w-4 h-4 ${currentPage === pageCount ? 'stroke-zinc-300' : 'stroke-zinc-700'}`}
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                    </button>
-                </div>
                 <div className="flex gap-2">
+                    <Select label="Tipo" value={typeSelected} onChange={(type) => onTypeChange(+type)}>
+                        <option value={0}>Todos</option>
+                        {productTypes.map((t) => (
+                            <option key={t.id} value={t.id}>
+                                {t.type}
+                            </option>
+                        ))}
+                    </Select>
                     <Select label="Año" value={yearSelected} onChange={(year) => onYearChange(+year)}>
                         {years.map((y) => (
                             <option key={y} value={y}>
@@ -225,7 +204,7 @@ export default function Products() {
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="text-sm text-zinc-800">
-                                                    {product.product_types.type}
+                                                    {product.product_types?.type ?? ''}
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
@@ -260,6 +239,47 @@ export default function Products() {
                         </div>
                     </div>
                 </div>
+            </div>
+            <div className="flex mt-4 justify-end">
+                <button
+                    className="mr-4 cursor-pointer rounded-full w-6 h-6 text-xs flex justify-center items-center"
+                    onClick={() => setCurrentPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                >
+                    <svg
+                        className={`w-4 h-4 ${currentPage === 1 ? 'stroke-zinc-300' : 'stroke-zinc-700'}`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+                {Array.from({ length: pageCount }, (_, i) => i + 1).map((n) => (
+                    <button
+                        key={n}
+                        className={`cursor-pointer rounded-full w-6 h-6 text-xs flex justify-center items-center ${
+                            currentPage === n ? 'bg-red-400 text-white shadow-lg shadow-red-400/50' : 'text-zinc-600'
+                        }`}
+                        onClick={() => setCurrentPage(n)}
+                    >
+                        {n}
+                    </button>
+                ))}
+                <button
+                    className="ml-4 cursor-pointer rounded-full w-6 h-6 text-xs flex justify-center items-center"
+                    onClick={() => setCurrentPage(currentPage + 1)}
+                    disabled={currentPage === pageCount}
+                >
+                    <svg
+                        className={`w-4 h-4 ${currentPage === pageCount ? 'stroke-zinc-300' : 'stroke-zinc-700'}`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
             </div>
         </>
     );
