@@ -141,8 +141,8 @@ export default function Products() {
                     </a>
                 </Link>
             </span>
-            <div className="w-full flex justify-between items-center">
-                <div className="relative w-fit h-fit shadow-lg shadow-zinc-400/10 rounded-full">
+            <div className="w-full flex-col sm:flex-row flex justify-between items-center">
+                <div className="mb-6 sm:mb-0 relative w-fit h-fit shadow-lg shadow-zinc-400/10 rounded-full">
                     <input
                         className="rounded-full bg-white b text-zinc-400 w-60 py-3 pl-6 pr-12 outline-none text-xs"
                         placeholder="Busca un accesorio..."
@@ -193,96 +193,72 @@ export default function Products() {
                 <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                     <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
                         <div className="overflow-hidden sm:rounded-lg">
-                            <table className="min-w-full">
-                                <thead className="bg-white border-b border-b-zinc-100 py-10">
-                                    <tr>
-                                        <th
-                                            scope="col"
-                                            className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                        >
-                                            Código
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                        >
-                                            Tipo
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                        >
-                                            Descripción
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                        >
-                                            Precio
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                        >
-                                            Fecha Agregado
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                        >
-                                            Estado
-                                        </th>
-                                        <th scope="col" className="relative px-6 py-4">
-                                            <span className="sr-only">Edit</span>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody className="bg-white divide-y divide-gray-50">
-                                    {products.map((product) => (
-                                        <tr key={product.id}>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="flex items-center">
-                                                    <div className="ml-4">
-                                                        <div className="text-sm font-medium text-zinc-800">
-                                                            {product.id}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="text-sm text-zinc-800">
-                                                    {product.product_types?.type ?? ''}
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="text-sm text-zinc-800">{product.description}</div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-zinc-800">
-                                                Q{product.price.toFixed(2)}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-zinc-800">
-                                                {formatDate(product.created_at)}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-zinc-800">
-                                                <span
-                                                    className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                                        product.status === AVAILABLE
-                                                            ? 'bg-green-100 text-green-800'
-                                                            : 'bg-red-100 text-red-800'
-                                                    }`}
+                            <div className="flex items-center justify-center">
+                                <div className="container">
+                                    <table className="w-full flex flex-row flex-no-wrap sm:bg-white rounded-lg overflow-hidden sm:shadow-lg sm:shadow-zinc-100/10 my-5">
+                                        <thead className="sm:bg-white border-b border-b-zinc-100">
+                                            {products.map((product) => (
+                                                <tr
+                                                    key={product.id}
+                                                    className="bg-white flex flex-col flex-no wrap sm:table-row rounded-l-lg sm:rounded-none mb-2 sm:mb-0"
                                                 >
-                                                    {PRODUCT_STATUS[product.status]}
-                                                </span>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                <a href="#" className="text-red-300 hover:text-red-400">
-                                                    Editar
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                                    <th className="p-4 sm:px-6 sm:py-4 text-left text-sm sm:text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Código
+                                                    </th>
+                                                    <th className="p-4 sm:px-6 sm:py-4 text-left text-sm sm:text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Tipo
+                                                    </th>
+                                                    <th className="p-4 sm:px-6 sm:py-4 text-left text-sm sm:text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Descripción
+                                                    </th>
+                                                    <th className="p-4 sm:px-6 sm:py-4 text-left text-sm sm:text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Precio
+                                                    </th>
+                                                    <th className="p-4 sm:px-6 sm:py-4 text-left text-sm sm:text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Fecha Agregado
+                                                    </th>
+                                                    <th className="p-4 sm:px-6 sm:py-4 text-left text-sm sm:text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Estado
+                                                    </th>
+                                                </tr>
+                                            ))}
+                                        </thead>
+                                        <tbody className="flex-1 sm:flex-none">
+                                            {products.map((product) => (
+                                                <tr
+                                                    key={product.id}
+                                                    className="rounded-r-xl bg-white overflow-hidden flex flex-col flex-no wrap sm:table-row mb-2 sm:mb-0"
+                                                >
+                                                    <td className="bg-white p-4 text-sm text-zinc-800">{product.id}</td>
+                                                    <td className="bg-white p-4 text-sm text-zinc-800">
+                                                        {product.product_types?.type ?? ''}
+                                                    </td>
+                                                    <td className="bg-white p-4 text-sm text-zinc-800">
+                                                        {product.description}
+                                                    </td>
+                                                    <td className="bg-white p-4 text-sm text-zinc-800">
+                                                        Q{product.price.toFixed(2)}
+                                                    </td>
+                                                    <td className="bg-white p-4 text-sm text-zinc-800">
+                                                        {formatDate(product.created_at)}
+                                                    </td>
+                                                    <td className="bg-white p-4 text-sm text-zinc-800">
+                                                        <span
+                                                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                                                product.status === AVAILABLE
+                                                                    ? 'bg-green-100 text-green-800'
+                                                                    : 'bg-red-100 text-red-800'
+                                                            }`}
+                                                        >
+                                                            {PRODUCT_STATUS[product.status]}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
