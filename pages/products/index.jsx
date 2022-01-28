@@ -68,7 +68,11 @@ export default function Products() {
               `,
                     { count: 'exact' },
                 )
-                .filter('id', `${search.trim() === '' ? 'not.eq' : 'eq'}`, `${search.trim() === '' ? '0' : search}`)
+                .or(
+                    `description.ilike.%${search ?? ''}%${
+                        search.trim() !== '' && !isNaN(search) ? `,id.eq.${search}` : ``
+                    }`,
+                )
                 .in('type', typeFilter)
                 .gte('created_at', `${year}-${month}-01`)
                 .lte('created_at', `${year}-${month}-${moment(`${year}-${month}`, 'YYYY-MM').daysInMonth()}`)

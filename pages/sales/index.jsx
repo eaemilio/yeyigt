@@ -57,11 +57,9 @@ export default function Sales() {
                         id,
                         price
                       ),
-                      profiles (
+                      retailers (
                         id,
-                        first_name,
-                        last_name,
-                        avatar_url
+                        name
                       )
                   `,
                     { count: 'exact' },
@@ -174,7 +172,7 @@ export default function Sales() {
                                                         {sale.products.description}
                                                     </td>
                                                     <td className="bg-white p-4 text-sm text-zinc-800">
-                                                        {sale.profiles.first_name} {sale.profiles.last_name}
+                                                        {sale.retailers.name}
                                                     </td>
                                                     <td className="bg-white p-4 text-sm text-zinc-800 text-ellipsis overflow-hidden break-all">
                                                         Q{sale.products.price.toFixed(2)}

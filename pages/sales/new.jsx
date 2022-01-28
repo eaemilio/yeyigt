@@ -14,10 +14,16 @@ export default function NewSale() {
     const [isLoading, setIsLoading] = useState(false);
     const [price, setPrice] = useState(0);
     const [client, setClient] = useState('');
+    const [retailer, setRetailer] = useState('');
+    const [retailers, setRetailers] = useState([]);
     const [note, setNote] = useState('');
     const [productType, setProductType] = useState('');
     const router = useRouter();
     const { userMeta } = useAuthSession();
+
+    useEffect(() => {
+        getRetailers();
+    }, []);
 
     useEffect(() => {
         if (product) {
@@ -28,6 +34,11 @@ export default function NewSale() {
     async function getProductType(type) {
         const { data: productType, error } = await supabase.from('product_types').select('*').eq('id', type).single();
         setProductType(productType.type);
+    }
+
+    async function getRetailers() {
+        const { data, error } = await supabase.from('retailers').select('*');
+        setRetailers(data);
     }
 
     function startSearch() {
@@ -67,14 +78,13 @@ export default function NewSale() {
     async function saveSale() {
         try {
             setIsLoading(true);
-            const user = supabase.auth.user();
 
             const values = {
                 sale_price: price,
                 client,
                 note,
                 product_id: product.id,
-                retailer: user.id,
+                retailer,
             };
             const { error } = await supabase.from('sales').insert(values, { returning: 'minimal' });
             if (error) {
@@ -85,6 +95,7 @@ export default function NewSale() {
                 return Promise.reject();
             }
             setPrice(0);
+            setRetailer(0);
             setNote('');
             setClient('');
             setProduct(null);
@@ -191,6 +202,22 @@ export default function NewSale() {
                             onChange={(e) => setClient(e.target.value)}
                             tabIndex={2}
                         />
+
+                        <label className="block mt-6 mb-2 uppercase text-xs font-bold text-zinc-500 tracking-wide">
+                            ¿Quién lo vendió?
+                        </label>
+                        <select
+                            className="form-select appearance-none block w-full px-5 py-3 text-base font-normal text-gray-700 bg-white bg-clip-padding bg-no-repeat rounded-lg transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none flex-1"
+                            value={retailer}
+                            onChange={(e) => setRetailer(e.target.value)}
+                        >
+                            <option value="0">Selecciona una vendedora</option>
+                            {retailers.map((r) => (
+                                <option value={r.id} key={r.id}>
+                                    {r.name}
+                                </option>
+                            ))}
+                        </select>
 
                         <label className="block mt-6 mb-2 uppercase text-xs font-bold text-zinc-500 tracking-wide">
                             Observaciones:
