@@ -170,10 +170,10 @@ export default function NewSale() {
                     </>
                 ) : (
                     <div className="mb-40 w-full">
-                        <label className="uppercase text-lg block mb-1 font-bold text-zinc-400 tracking-wide">
+                        <label className="uppercase text-xs block mb-1 font-bold text-zinc-400 tracking-wide">
                             {productType}
                         </label>
-                        <label className="block mb-6 font-bold text-zinc-800 tracking-wide">
+                        <label className="block mb-6 text-2xl font-bold text-zinc-800 tracking-wide">
                             {product.description}
                         </label>
                         <label className="block my-2 uppercase text-xs font-bold text-zinc-500 tracking-wide">
