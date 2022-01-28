@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import Loading from '../../components/ui/Loading';
 import TitleNav from '../../components/ui/Title';
 import { useAuthSession } from '../../lib/hooks';
 import { SOLD } from '../../utils/constants';
@@ -121,13 +122,7 @@ export default function NewSale() {
 
     return (
         <div className="flex h-full w-full flex-col">
-            <div
-                className={`absolute bg-white/80 flex justify-center items-center inset-0 ease-in-out duration-300 pointer-events-none ${
-                    isLoading ? 'opacity-1' : 'opacity-0'
-                }`}
-            >
-                <Image src="/loading.svg" width={120} height={120} alt="loading-indicator" />
-            </div>
+            <Loading isLoading={isLoading} />
             <TitleNav title="Nueva Venta" back={() => goBack()} showBack={userMeta?.roles?.id === 1 || !!product} />
             <div
                 className={`flex-1 flex flex-col justify-center w-full items-center mx-auto ${

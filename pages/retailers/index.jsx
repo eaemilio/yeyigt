@@ -1,6 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import Loading from '../../components/ui/Loading';
 import { supabase } from '../../utils/supabaseClient';
 
 export default function Retailers() {
@@ -9,6 +11,7 @@ export default function Retailers() {
     const [pageCount, setPageCount] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
     const [searchText, setSearchText] = useState('');
+    const router = useRouter();
 
     useEffect(() => {
         getRetailers('');
@@ -34,13 +37,7 @@ export default function Retailers() {
 
     return (
         <>
-            <div
-                className={`absolute bg-white/80 flex justify-center items-center inset-0 ease-in-out duration-300 pointer-events-none ${
-                    isLoading ? 'opacity-1' : 'opacity-0'
-                }`}
-            >
-                <Image src="/loading.svg" width={120} height={120} alt="loading-indicator" />
-            </div>
+            <Loading isLoading={isLoading} />
             <span className="text-2xl font-bold text-zinc-700 mb-6 flex justify-between items-center">
                 Vendedoras
                 <Link href="/retailers/new">
@@ -66,7 +63,7 @@ export default function Retailers() {
                 <div className="mb-6 sm:mb-0 relative w-full sm:w-fit h-fit shadow-lg shadow-zinc-400/10 rounded-full">
                     <input
                         className="rounded-full bg-white b text-zinc-400 w-full sm:w-60 py-3 pl-6 pr-12 outline-none text-xs"
-                        placeholder="Busca un accesorio..."
+                        placeholder="Busca una vendedora..."
                         onKeyDown={handleKeyDown}
                         value={searchText}
                         onChange={(e) => setSearchText(e.target.value)}
@@ -115,7 +112,10 @@ export default function Retailers() {
                                             {retailers.map((retailer) => (
                                                 <tr
                                                     key={retailer.id}
-                                                    className="rounded-r-xl bg-white overflow-hidden flex flex-col flex-no wrap sm:table-row mb-2 sm:mb-0"
+                                                    className="cursor-pointer rounded-r-xl bg-white overflow-hidden flex flex-col flex-no wrap sm:table-row mb-2 sm:mb-0"
+                                                    onClick={() => {
+                                                        router.push(`retailers/${retailer.id}`);
+                                                    }}
                                                 >
                                                     <td className="bg-white p-4 text-sm text-zinc-800">
                                                         {retailer.id}

@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import Loading from '../../components/ui/Loading';
 import Select from '../../components/ui/Select';
 import { AVAILABLE, DEFAULT_PAGE_SIZE, MONTHS, PRODUCT_STATUS } from '../../utils/constants';
 import { formatDate, getPageCount, getPagination, getYearsRange } from '../../utils/helpers';
@@ -117,13 +118,7 @@ export default function Products() {
 
     return (
         <>
-            <div
-                className={`absolute bg-white/80 flex justify-center items-center inset-0 ease-in-out duration-300 pointer-events-none ${
-                    isLoading ? 'opacity-1' : 'opacity-0'
-                }`}
-            >
-                <Image src="/loading.svg" width={120} height={120} alt="loading-indicator" />
-            </div>
+            <Loading isLoading={isLoading} />
             <span className="text-2xl font-bold text-zinc-700 mb-6 flex justify-between items-center">
                 Productos
                 <Link href="/products/new">

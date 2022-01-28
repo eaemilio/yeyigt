@@ -6,6 +6,7 @@ import { SessionContext } from '../../lib/context';
 import { supabase } from '../../utils/supabaseClient';
 import { AVAILABLE } from '../../utils/constants';
 import { useAuthSession } from '../../lib/hooks';
+import Image from 'next/image';
 
 export default function Dashboard(props) {
     const { pathname } = useRouter();
@@ -38,9 +39,9 @@ export default function Dashboard(props) {
     }
 
     return isSignedIn ? (
-        <div className="w-full h-full bg-zinc-100 dark:bg-zinc-800 flex">
+        <div className="w-full h-full bg-zinc-50 dark:bg-zinc-800 flex">
             <div
-                className={`ease-in-out duration-300 h-screen w-screen md:w-1/4 md:max-w-xs md:min-w-fit border bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-700 py-24 px-6 absolute flex flex-col justify-between md:relative z-10 top-0 bottom-0 ${
+                className={`z-30 overflow-hidden ease-in-out duration-300 h-screen w-screen md:w-1/4 md:max-w-xs md:min-w-fit border bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-700 py-24 px-6 absolute flex flex-col justify-between md:relative z-10 top-0 bottom-0 ${
                     menuVisible ? 'left-0 right-0' : '-left-full right-full md:left-0 md:right-0'
                 }`}
             >
@@ -203,11 +204,11 @@ export default function Dashboard(props) {
                     </button>
                 </div>
             </div>
-            <div className="h-full flex-1 bg-zinc-100">
+            <div className="h-full flex-1 bg-zinc-50">
                 <div className="flex flex-col flex-1 h-full w-full">
-                    <div className="bg-white dark:bg-zinc-700 flex justify-between items-center py-4 px-6 w-full">
+                    <div className="flex justify-between items-center py-4 px-6 w-full relative">
                         <button
-                            className="block md:hidden p-3 rounded-full bg-zinc-100 flex items-center justify-center"
+                            className="block md:hidden p-3 rounded-full bg-zinc-100 flex items-center justify-center z-20"
                             onClick={() => setMenuVisible(true)}
                         >
                             <svg
@@ -243,7 +244,10 @@ export default function Dashboard(props) {
                         </div>
                         <ProfileAvatar />
                     </div>
-                    <div className="relative py-10 px-8 h-full overflow-y-auto">{props.children}</div>
+                    <div className="absolute -right-full -left-full -top-20 sm:-top-10 sm:-right-3/4 sm:left-1/2 flex items-end blur-2xl z-10 opacity-60 sm:opacity-40">
+                        <Image src="/bg.svg" className="w-full h-fit" alt="bg" width={1982} height={362} />
+                    </div>
+                    <div className="relative py-10 px-8 h-full overflow-y-auto z-20">{props.children}</div>
                 </div>
             </div>
         </div>

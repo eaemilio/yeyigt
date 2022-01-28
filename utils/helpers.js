@@ -54,3 +54,11 @@ export const getTypeIcon = (id) => {
             return BraceletIcon;
     }
 };
+
+export const findTotalSum = (array) => {
+    return [...array].reduce((sum, a) => sum + a, 0);
+};
+
+export const numberWithCommas = (x) => {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+};

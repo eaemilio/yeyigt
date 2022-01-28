@@ -8,14 +8,14 @@ export default function ProfileAvatar() {
 
     return (
         <Link href="/profile">
-            <a className="flex items-center cursor-pointer">
+            <a className="flex items-center cursor-pointer z-20">
                 <div className="flex flex-col mx-2">
                     <span className="font-bold text-xs text-zinc-800">
                         {userMeta?.first_name ?? ''} {userMeta?.last_name ?? ''}
                     </span>
                 </div>
                 <Image
-                    className="rounded-full ring-2 ring-white dark:ring-zinc-700"
+                    className="rounded-full  dark:ring-zinc-700"
                     src={userMeta?.avatar_url ?? '/vercel.svg'}
                     alt="Profile"
                     width={36}
