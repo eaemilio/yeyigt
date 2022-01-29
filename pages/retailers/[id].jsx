@@ -1,23 +1,59 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import BraceletIcon from '../../components/dashboard/icons/Bracelet';
 import DebtIcon from '../../components/dashboard/icons/DebtIcon';
 import RingIcon from '../../components/dashboard/icons/RingIcon';
 import SalesIcon from '../../components/dashboard/icons/Sales';
+import RetailerChart from '../../components/RetailerChart';
 import Loading from '../../components/ui/Loading';
-import { findTotalSum, numberWithCommas } from '../../utils/helpers';
+import { findTotalSum, getDebt, numberWithCommas } from '../../utils/helpers';
 import { supabase } from '../../utils/supabaseClient';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { Bar } from 'react-chartjs-2';
+import moment from 'moment';
+import { BAR_STYLE, options } from '../../utils/constants';
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.defaults.font.family = 'Outfit';
+
+const labels = [
+    'Enero',
+    'Febrero',
+    'Marzo',
+    'Abril',
+    'Mayo',
+    'Junio',
+    'Julio',
+    'Agosto',
+    'Septiembre',
+    'Octubre',
+    'Noviembre',
+    'Diciembre',
+];
 
 export default function Retailer({}) {
     const [isLoading, setIsLoading] = useState(false);
     const [retailer, setRetailer] = useState(null);
     const [sales, setSales] = useState([]);
+    const [totalSalesNoPandora, setTotalSalesNoPandora] = useState(0.0);
+    const [totalSalesPandora, setTotalSalesPandora] = useState(0.0);
     const [totalSales, setTotalSales] = useState(0.0);
+    const [debt, setDebt] = useState(0);
     const { query } = useRouter();
     const id = +query.id;
+
+    // CHART
+    const [chartData, setChartData] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+    const [chart, setChart] = useState({
+        labels,
+        datasets: [
+            {
+                data: [],
+                ...BAR_STYLE,
+            },
+        ],
+    });
 
     useEffect(() => {
         if (!id) {
@@ -26,6 +62,37 @@ export default function Retailer({}) {
         getRetailerInfo(id);
         getRetailerSales(id);
     }, [id]);
+
+    useEffect(() => {
+        if (!retailer) {
+            return;
+        }
+        setTotalSales(totalSalesNoPandora + totalSalesPandora);
+        setDebt(
+            getDebt(retailer.due_amount, totalSalesNoPandora) + getDebt(retailer.due_amount_pandora, totalSalesPandora),
+        );
+    }, [retailer, totalSalesNoPandora, totalSalesPandora]);
+
+    useEffect(() => {
+        const aux = [...chartData];
+        sales.forEach((d) => {
+            aux[moment(d.created_at).month()] = aux[moment(d.created_at).month()] + d.sale_price;
+            setChartData(aux);
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [sales]);
+
+    useEffect(() => {
+        setChart({
+            labels,
+            datasets: [
+                {
+                    data: chartData,
+                    ...BAR_STYLE,
+                },
+            ],
+        });
+    }, [chartData]);
 
     async function getRetailerInfo(id) {
         try {
@@ -42,10 +109,30 @@ export default function Retailer({}) {
     async function getRetailerSales(id) {
         try {
             setIsLoading(true);
-            const { data } = await supabase.from('sales').select('*').eq('retailer', id);
+            const { data } = await supabase
+                .from('sales')
+                .select(
+                    `
+                    id,
+                    sale_price,
+                    created_at,
+                    note,
+                    client,
+                    products (
+                      description,
+                      id,
+                      price,
+                      pandora
+                    ),
+                    retailer
+            `,
+                )
+                .eq('retailer', id);
             setSales(data);
-            setTotalSales(findTotalSum(data.map((d) => d.sale_price)));
+            setTotalSalesNoPandora(findTotalSum(data.filter((d) => !d.products.pandora).map((d) => d.sale_price)));
+            setTotalSalesPandora(findTotalSum(data.filter((d) => d.products.pandora).map((d) => d.sale_price)));
         } catch (error) {
+            console.log(error);
             toast.error('Ocurrió un error al consultar la información del vendedor, recarga para intentarlo de nuevo');
         } finally {
             setIsLoading(false);
@@ -91,7 +178,7 @@ export default function Retailer({}) {
                         <DebtIcon className={`ease-in-out duration-300 w-5 h-5 fill-red-400`} />
                     </div>
                     <span className="text-4xl mt-6 text-zinc-800 font-bold">
-                        Q. {numberWithCommas(totalSales.toFixed(2))}
+                        Q. {numberWithCommas(debt.toFixed(2))}
                     </span>
                     <span className="uppercase mt-2 text-xs text-zinc-400 tracking-wider">Total a Pagar</span>
                 </div>
@@ -102,6 +189,10 @@ export default function Retailer({}) {
                     <span className="text-4xl mt-6 text-zinc-800 font-bold">{sales?.length}</span>
                     <span className="uppercase mt-2 text-xs text-zinc-400 tracking-wider">Piezas vendidas</span>
                 </div>
+            </div>
+            <div className="flex flex-col w-lg h-80 px-10 py-6 bg-white mt-2 rounded-xl shadow-xl shadow-zinc-200/10 relative">
+                <span className="text-xl font-bold text-zinc-700 mb-6">Resumen de Ventas</span>
+                <div className="flex-1">{sales.length > 0 && <Bar options={options} data={chart} />}</div>
             </div>
         </>
     );

@@ -1,6 +1,6 @@
 export default function Select(props) {
     return (
-        <div className={`flex flex-col ${props.className}`}>
+        <div className={`flex flex-col relative ${props.className}`}>
             <label className="ml-1 block text-xs font-bold text-zinc-500 tracking-wide" htmlFor="description">
                 {props.label ?? ''}
             </label>

@@ -9,6 +9,7 @@ export default function NewProduct() {
     const [type, setType] = useState(0);
     const [price, setPrice] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
+    const [pandora, setPandora] = useState(false);
     const [created, setCreated] = useState({});
 
     useEffect(() => {
@@ -39,6 +40,7 @@ export default function NewProduct() {
                 type,
                 description,
                 price,
+                pandora,
             };
             const { data, error } = await supabase.from('products').insert(values, { returning: 'representation' });
             toast.success(`Código de producto: ${data[0].id}`, { duration: 7000 });
@@ -46,6 +48,7 @@ export default function NewProduct() {
             setDescription('');
             setType('');
             setPrice('');
+            setPandora(false);
             if (error) {
                 return Promise.reject();
             }
@@ -126,7 +129,7 @@ export default function NewProduct() {
                             Tipo
                         </label>
                         <select
-                            className="form-select appearance-none block w-full px-5 py-3 text-base font-normal text-gray-700 bg-white bg-clip-padding bg-no-repeat rounded-lg transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none flex-1"
+                            className="relative form-select appearance-none block w-full px-5 py-3 text-base font-normal text-gray-700 bg-white bg-clip-padding bg-no-repeat rounded-lg transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none flex-1"
                             value={type}
                             onChange={(e) => setType(e.target.value)}
                         >
@@ -137,6 +140,22 @@ export default function NewProduct() {
                                 </option>
                             ))}
                         </select>
+                    </div>
+                </div>
+                <div className="flex w-full gap-3 mt-6">
+                    <div className="form-check">
+                        <input
+                            className="form-check-input appearance-none h-4 w-4 border border-gray-200 rounded-md bg-white checked:bg-red-400 checked:border-red-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
+                            type="checkbox"
+                            value={pandora}
+                            onChange={(e) => setPandora(e.target.checked)}
+                        />
+                        <label
+                            className="form-check-label inline-block uppercase text-xs text-zinc-600"
+                            htmlFor="flexCheckDefault"
+                        >
+                            Pandora
+                        </label>
                     </div>
                 </div>
                 <button
