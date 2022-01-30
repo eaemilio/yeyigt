@@ -104,7 +104,7 @@ export default function NewSale() {
             setRetailer(0);
             setNote('');
             setClient('');
-            // setProduct(null);
+            setProduct(null);
         } catch (error) {
             return Promise.reject();
         } finally {
