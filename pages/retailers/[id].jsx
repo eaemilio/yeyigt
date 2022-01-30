@@ -199,7 +199,7 @@ export default function Retailer({}) {
                         Q. {numberWithCommas(debt.toFixed(2))}
                     </span>
                     <span className="uppercase mt-2 text-xs text-zinc-400 tracking-wider">Total a Pagar</span>
-                    <Payment retailerId={id} onSave={() => getAllRetailerInfo(id)} />
+                    {userMeta?.roles?.id === 1 && <Payment retailerId={id} onSave={() => getAllRetailerInfo(id)} />}
                 </div>
                 <div className="flex-1 py-12 flex rounded-lg flex-col justify-center items-center bg-white">
                     <div className="w-10 h-10 bg-zinc-100 rounded-full flex items-center justify-center">
