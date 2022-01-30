@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import Loading from '../../components/ui/Loading';
 import Select from '../../components/ui/Select';
+import { useAuthSession } from '../../lib/hooks';
 import { AVAILABLE, DEFAULT_PAGE_SIZE, MONTHS, PRODUCT_STATUS } from '../../utils/constants';
 import { formatDate, getPageCount, getPagination, getYearsRange } from '../../utils/helpers';
 import { supabase } from '../../utils/supabaseClient';
@@ -20,6 +21,7 @@ export default function Products() {
     const [productTypes, setProductTypes] = useState([]);
     const [typeSelected, setTypeSelected] = useState(0);
     const [searchText, setSearchText] = useState('');
+    const { userMeta } = useAuthSession();
 
     useEffect(() => {
         const currentYear = moment().year();
@@ -121,24 +123,26 @@ export default function Products() {
             <Loading isLoading={isLoading} />
             <span className="text-2xl font-bold text-zinc-700 mb-6 flex justify-between items-center">
                 Productos
-                <Link href="/products/new">
-                    <a className="bg-red-400 rounded-full text-white p-4">
-                        <svg
-                            className="w-6 h-6"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                            />
-                        </svg>
-                    </a>
-                </Link>
+                {userMeta?.roles?.id === 1 && (
+                    <Link href="/products/new">
+                        <a className="bg-red-400 rounded-full text-white p-4">
+                            <svg
+                                className="w-6 h-6"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                                />
+                            </svg>
+                        </a>
+                    </Link>
+                )}
             </span>
             <div className="w-full flex-col sm:flex-row flex justify-between items-center">
                 <div className="mb-6 sm:mb-0 relative w-full sm:w-fit h-fit shadow-lg shadow-zinc-400/10 rounded-full">

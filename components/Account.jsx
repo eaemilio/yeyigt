@@ -3,6 +3,7 @@ import { useState, useEffect, useContext } from 'react';
 import { SessionContext } from '../lib/context';
 import { useAuthSession } from '../lib/hooks';
 import { supabase } from '../utils/supabaseClient';
+import Avatar from './Avatar';
 import Loading from './ui/Loading';
 
 export default function Account() {
@@ -11,7 +12,7 @@ export default function Account() {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [roleId, setRoleId] = useState('');
-    const [avatar_url, setAvatarUrl] = useState('');
+    const [avatarUrl, setAvatarUrl] = useState('');
     const router = useRouter();
 
     useEffect(() => {
@@ -41,6 +42,8 @@ export default function Account() {
 
             if (error) {
                 throw error;
+            } else {
+                location.reload();
             }
         } catch (error) {
             alert(error.message);
@@ -56,7 +59,21 @@ export default function Account() {
 
     return (
         <>
-            <div className="relative max-w-md w-full mx-auto">
+            <div className="relative max-w-md w-full mx-auto flex flex-col justify-center">
+                <Avatar
+                    url={avatarUrl}
+                    size={150}
+                    className={'flex mx-auto mb-14'}
+                    onUpload={(url) => {
+                        setAvatarUrl(url);
+                        updateProfile({
+                            avatar_url: url,
+                            first_name: firstName,
+                            last_name: lastName,
+                            role_id: roleId,
+                        });
+                    }}
+                />
                 <div>
                     <label
                         htmlFor="email"
@@ -98,7 +115,7 @@ export default function Account() {
                         className="font-bold bg-red-200 rounded-lg text-red-400 px-30 py-3 w-full mt-20 hover:bg-red-100 ease-in-out duration-300 disabled:bg-gray-300 disabled:text-gray-400"
                         onClick={() =>
                             updateProfile({
-                                avatar_url,
+                                avatar_url: avatarUrl,
                                 first_name: firstName,
                                 last_name: lastName,
                                 role_id: roleId,

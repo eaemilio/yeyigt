@@ -1,10 +1,19 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuthSession } from '../lib/hooks';
+import { supabase } from '../utils/supabaseClient';
 
 export default function ProfileAvatar() {
     const { userMeta } = useAuthSession();
+    const [avatarUrl, setAvatarUrl] = useState('');
+
+    useEffect(() => {
+        if (!userMeta) {
+            return;
+        }
+        setAvatarUrl(userMeta.avatar_url);
+    }, [userMeta]);
 
     return (
         <Link href="/profile">
@@ -14,13 +23,18 @@ export default function ProfileAvatar() {
                         {userMeta?.first_name ?? ''} {userMeta?.last_name ?? ''}
                     </span>
                 </div>
-                <Image
-                    className="rounded-full  dark:ring-zinc-700"
-                    src={userMeta?.avatar_url ?? '/vercel.svg'}
-                    alt="Profile"
-                    width={36}
-                    height={36}
-                />
+                <div className="block h-10 w-10 relative">
+                    {avatarUrl && (
+                        <Image
+                            className="rounded-full object-cover"
+                            src={`https://supabase-cdn.vercel.app/api/resize?f=${avatarUrl}&b=avatars&w=150`}
+                            alt="Profile"
+                            width={36}
+                            height={36}
+                            layout="responsive"
+                        />
+                    )}
+                </div>
             </a>
         </Link>
     );

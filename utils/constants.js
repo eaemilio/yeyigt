@@ -40,11 +40,20 @@ export const options = {
         x: {
             grid: {
                 display: false,
+                borderWidth: 0,
+            },
+            ticks: {
+                color: 'rgb(212 212 216)',
             },
         },
         y: {
             grid: {
                 display: false,
+                borderColor: 'transparent',
+            },
+            ticks: {
+                color: 'rgb(212 212 216)',
+                backdropPadding: 1,
             },
         },
     },
@@ -52,7 +61,7 @@ export const options = {
 
 export const BAR_STYLE = {
     backgroundColor: 'rgba(248, 113, 113, 0.7)',
-    borderRadius: 10,
-    barThickness: 40,
+    borderRadius: 15,
+    barThickness: 30,
     minBarLength: 10,
 };

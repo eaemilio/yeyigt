@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 import Loading from '../../components/ui/Loading';
 import TitleNav from '../../components/ui/Title';
 import { useAuthSession } from '../../lib/hooks';
-import { SOLD } from '../../utils/constants';
+import { AVAILABLE, SOLD } from '../../utils/constants';
 import { supabase } from '../../utils/supabaseClient';
 
 export default function NewSale() {
@@ -46,7 +46,7 @@ export default function NewSale() {
         toast.promise(getProductById(search), {
             loading: 'Buscando el producto...',
             success: <b>Se encontró un producto.</b>,
-            error: <b>No se encontró el producto, vuelve a intentarlo con otro código.</b>,
+            error: <b>Producto no disponible.</b>,
         });
     }
 
@@ -54,7 +54,7 @@ export default function NewSale() {
         try {
             setIsLoading(true);
             const { data: p, error } = await supabase.from('products').select('*').eq('id', id).single();
-            if (error || !p) {
+            if (error || !p || p.status === SOLD) {
                 return Promise.reject();
             }
             setSearch('');
@@ -79,13 +79,18 @@ export default function NewSale() {
     async function saveSale() {
         try {
             setIsLoading(true);
+            const userRetailer = retailers.find((r) => r.user_id === userMeta?.id);
+            if (!userRetailer) {
+                toast.error('Vendedor no configurado, contacta a un administrador');
+                return Promise.reject();
+            }
 
             const values = {
                 sale_price: price,
                 client,
                 note,
                 product_id: product.id,
-                retailer,
+                retailer: userMeta?.roles?.id === 1 ? +retailer : userRetailer.id,
             };
             const { error } = await supabase.from('sales').insert(values, { returning: 'minimal' });
             if (error) {
@@ -99,7 +104,7 @@ export default function NewSale() {
             setRetailer(0);
             setNote('');
             setClient('');
-            setProduct(null);
+            // setProduct(null);
         } catch (error) {
             return Promise.reject();
         } finally {
@@ -198,21 +203,25 @@ export default function NewSale() {
                             tabIndex={2}
                         />
 
-                        <label className="block mt-6 mb-2 uppercase text-xs font-bold text-zinc-500 tracking-wide">
-                            ¿Quién lo vendió?
-                        </label>
-                        <select
-                            className="form-select appearance-none block w-full px-5 py-3 text-base font-normal text-gray-700 bg-white bg-clip-padding bg-no-repeat rounded-lg transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none flex-1"
-                            value={retailer}
-                            onChange={(e) => setRetailer(e.target.value)}
-                        >
-                            <option value="0">Selecciona una vendedora</option>
-                            {retailers.map((r) => (
-                                <option value={r.id} key={r.id}>
-                                    {r.name}
-                                </option>
-                            ))}
-                        </select>
+                        {userMeta?.roles?.id === 1 && (
+                            <>
+                                <label className="block mt-6 mb-2 uppercase text-xs font-bold text-zinc-500 tracking-wide">
+                                    ¿Quién lo vendió?
+                                </label>
+                                <select
+                                    className="form-select appearance-none block w-full px-5 py-3 text-base font-normal text-gray-700 bg-white bg-clip-padding bg-no-repeat rounded-lg transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none flex-1"
+                                    value={retailer}
+                                    onChange={(e) => setRetailer(e.target.value)}
+                                >
+                                    <option value="0">Selecciona una vendedora</option>
+                                    {retailers.map((r) => (
+                                        <option value={r.id} key={r.id}>
+                                            {r.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </>
+                        )}
 
                         <label className="block mt-6 mb-2 uppercase text-xs font-bold text-zinc-500 tracking-wide">
                             Observaciones:

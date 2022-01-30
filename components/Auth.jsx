@@ -23,7 +23,7 @@ export default function Auth() {
 
     return (
         <div className="flex items-center justify-center w-screen h-screen">
-            <div>
+            <div className="px-6 py-6">
                 <p className="text-3xl font-bold text-zinc-800">Bienvinido a Yeyi</p>
                 <p className="font-xs text-zinc-800 my-6">
                     Ingresa tu correo y te enviaremos un link mágico para iniciar sesión.
