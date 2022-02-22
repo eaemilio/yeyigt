@@ -4,5 +4,9 @@ export default function handler(req, res) {
         return;
     }
     // const body = JSON.parse(req.body);
-    res.status(401).send({ error: 'Incorrect username or password' });
+    if (Math.random() < 0.5) {
+        res.status(200).send({ access_token: '', user: {} });
+    } else {
+        res.status(401).send({ message: 'Incorrect username or password' });
+    }
 }
