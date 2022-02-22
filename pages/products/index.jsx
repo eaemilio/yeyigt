@@ -77,8 +77,14 @@ export default function Products() {
                     }`,
                 )
                 .in('type', typeFilter)
-                .gte('created_at', `${year}-${month}-01`)
-                .lte('created_at', `${year}-${month}-${moment(`${year}-${month}`, 'YYYY-MM').daysInMonth()}`)
+                .gte('created_at', `${year}-${month === 0 ? '01' : month}-01`)
+                .lte(
+                    'created_at',
+                    `${year}-${month === 0 ? '12' : month}-${moment(
+                        `${year}-${month === 0 ? '12' : month}`,
+                        'YYYY-MM',
+                    ).daysInMonth()}`,
+                )
                 .order('id', { ascending: true })
                 .range(from, to);
             setPageCount(getPageCount(count));
@@ -93,16 +99,19 @@ export default function Products() {
     function onMonthChange(month) {
         setSearchText('');
         setMonthSelected(month);
+        setCurrentPage(1);
     }
 
     function onYearChange(year) {
         setSearchText('');
         setYearSelected(year);
+        setCurrentPage(1);
     }
 
     function onTypeChange(type) {
         setSearchText('');
         setTypeSelected(type);
+        setCurrentPage(1);
     }
 
     function handleKeyDown(event) {
@@ -194,6 +203,7 @@ export default function Products() {
                         ))}
                     </Select>
                     <Select label="Mes" value={monthSelected} onChange={(mo) => onMonthChange(+mo)} className="flex-1">
+                        <option value={0}>Todos</option>
                         {MONTHS.map((m, i) => (
                             <option key={i} value={i + 1}>
                                 {m}
