@@ -66,7 +66,10 @@ export default function Sales() {
                     { count: 'exact' },
                 )
                 .gte('created_at', `${year}-${month}-01`)
-                .lte('created_at', `${year}-${month}-${moment(`${year}-${month}`, 'YYYY-MM').daysInMonth()}`)
+                .lte(
+                    'created_at',
+                    `${year}-${month}-${moment(`${year}-${month}`, 'YYYY-MM').daysInMonth()}T23:59:59.9999Z`,
+                )
                 .range(from, to);
             setPageCount(getPageCount(count));
             setSales(sales ?? []);
