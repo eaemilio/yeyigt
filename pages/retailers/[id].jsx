@@ -70,8 +70,8 @@ export default function Retailer({}) {
         }
         setTotalSales(totalSalesNoPandora + totalSalesPandora);
         setDebt(
-            getDebt(retailer.due_amount, totalSalesNoPandora) +
-                getDebt(retailer.due_amount_pandora, totalSalesPandora) -
+            getDebt(retailer.due_amount, totalSalesNoPandora, false) +
+                getDebt(retailer.due_amount_pandora, totalSalesPandora, true) -
                 totalPayments,
         );
     }, [retailer, totalSalesNoPandora, totalSalesPandora, totalPayments]);

@@ -63,6 +63,6 @@ export const numberWithCommas = (x) => {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 };
 
-export const getDebt = (gramPrice, totalSales) => {
-    return (totalSales / 60) * gramPrice;
+export const getDebt = (gramPrice, totalSales, pandora) => {
+    return (totalSales / (pandora ? 65 : 60)) * gramPrice;
 };
