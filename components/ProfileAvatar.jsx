@@ -6,6 +6,7 @@ import { supabase } from '../utils/supabaseClient';
 
 export default function ProfileAvatar() {
     const { userMeta } = useAuthSession();
+    
     const [avatarUrl, setAvatarUrl] = useState('');
 
     useEffect(() => {

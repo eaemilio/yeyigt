@@ -8,6 +8,7 @@ export default function NewRetailer() {
     const [name, setName] = useState(false);
     const [dueDay, setDueDay] = useState('');
     const [dueAmount, setDueAmount] = useState('');
+    const [dueAmountPandora, setDueAmountPandora] = useState('');
 
     async function createRetailer() {
         try {
@@ -16,6 +17,7 @@ export default function NewRetailer() {
                 name,
                 due_date: dueDay,
                 due_amount: dueAmount,
+                due_amount_pandora: dueAmountPandora
             };
             const { error } = await supabase.from('retailers').insert(values, { returning: 'minimal' });
             if (error) {
@@ -105,6 +107,23 @@ export default function NewRetailer() {
                             className="bg-gray-200 outline-none flex-1 py-3 px-5 text-zinc-500 tracking-wide"
                             value={dueAmount || ''}
                             onChange={(e) => setDueAmount(e.target.value)}
+                            tabIndex={3}
+                        />
+                    </div>
+                </div>
+                <div className="flex-3 w-full sm:w-fit">
+                    <label className="block mt-6 mb-2 uppercase text-xs font-bold text-zinc-500 tracking-wide">
+                        Precio del Gramo Pandora
+                    </label>
+                    <div className="w-full rounded-lg overflow-hidden flex">
+                        <span className="bg-zinc-300 flex justify-center items-center font-bold px-5 text-zinc-500">
+                            Q
+                        </span>
+                        <input
+                            placeholder="45.00"
+                            className="bg-gray-200 outline-none flex-1 py-3 px-5 text-zinc-500 tracking-wide"
+                            value={dueAmountPandora || ''}
+                            onChange={(e) => setDueAmountPandora(e.target.value)}
                             tabIndex={3}
                         />
                     </div>
