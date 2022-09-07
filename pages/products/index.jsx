@@ -55,7 +55,6 @@ export default function Products() {
       const typeFilter = type === 0 ? [...types.map((p) => p.id)] : [type];
       const statusFilter =
         statusSelected === PRODUCT_STATUS.length - 1 ? [...PRODUCT_STATUS.map((_, index) => index)] : [status];
-      console.log(statusFilter);
       const {
         data: products,
         error,
@@ -131,6 +130,7 @@ export default function Products() {
         type: typeSelected,
         types: productTypes,
         search: searchText,
+        statusSelected: status,
       });
     }
   }
