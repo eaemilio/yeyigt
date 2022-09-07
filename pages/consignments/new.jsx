@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import ProductsTable from '../../components/ProductsTable';
 import Loading from '../../components/ui/Loading';
 import TitleNav from '../../components/ui/Title';
-import { AVAILABLE, CONSIGNMENT } from '../../utils/constants';
+import { AVAILABLE, CONSIGNMENT, SOLD } from '../../utils/constants';
 import { supabase } from '../../utils/supabaseClient';
 
 export default function NewConsignment() {
@@ -29,7 +29,8 @@ export default function NewConsignment() {
     try {
       setIsLoading(true);
       const { data: p, error } = await supabase.from('products').select('*').eq('id', id).single();
-      if (error || !p || p.status !== AVAILABLE) {
+      // if (error || !p || p.status !== AVAILABLE) {
+      if (error || !p || p.status === SOLD) {
         return Promise.reject();
       }
       setProducts([...products, p]);
