@@ -22,6 +22,6 @@
         // allow jsx syntax in js files (for next.js project)
         "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }], //should add ".ts" if typescript project
         "react/jsx-props-no-spreading": "off",
-        "no-use-before-define": ["error", { "variables": false }],
+        "no-use-before-define": "off"
     }
 }
