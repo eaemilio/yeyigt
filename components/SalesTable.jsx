@@ -23,7 +23,7 @@ export default function SalesTable({
       if (retailer) {
         query.eq('retailer.id', retailer.id);
       }
-      const { from, to } = getPagination({ currentPage });
+      const { from, to } = getPagination({ page: currentPage });
       query
         .gte('created_at', `${yearSelected}-${monthSelected}-01`)
         .lte(
@@ -69,6 +69,7 @@ export default function SalesTable({
       setYearSelected(yearPreSelected);
     }
   }, [yearPreSelected]);
+
   useEffect(() => {
     if (monthPreselected) {
       setMonthSelected(monthPreselected);
@@ -76,7 +77,9 @@ export default function SalesTable({
   }, [monthPreselected]);
 
   useEffect(() => {
-    setPageCount(getPageCount(count));
+    if (count !== undefined) {
+      setPageCount(getPageCount(count ?? 0));
+    }
   }, [count]);
 
   useEffect(() => {
@@ -84,10 +87,6 @@ export default function SalesTable({
     const range = getYearsRange(currentYear);
     setYears(range);
   }, []);
-
-  useEffect(() => {
-    // getSales(monthSelected, yearSelected, currentPage, retailer?.id);
-  }, [currentPage, monthSelected, yearSelected, retailer]);
 
   function onMonthChange(month) {
     setMonthSelected(month);
