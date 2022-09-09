@@ -77,6 +77,7 @@ export default function Consignments() {
   }
 
   function onRetailerChange(id) {
+    setCurrentPage(1);
     setSelectedRetailer(id);
   }
 
@@ -94,7 +95,12 @@ export default function Consignments() {
               viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+              />
             </svg>
           </a>
         </Link>
@@ -136,7 +142,7 @@ export default function Consignments() {
                           <th className="h-20 sm:h-fit p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider">
                             Vendedora
                           </th>
-                          <th className="h-20 sm:h-fit p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider"></th>
+                          <th className="h-20 sm:h-fit p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider" />
                         </tr>
                       ))}
                     </thead>
@@ -146,8 +152,12 @@ export default function Consignments() {
                           key={consignment.id}
                           className="cursor-pointer rounded-r-xl bg-white overflow-hidden flex flex-col flex-no wrap sm:table-row mb-2 sm:mb-0"
                         >
-                          <td className="bg-white p-4 text-sm text-zinc-800">{consignment.product?.id}</td>
-                          <td className="bg-white p-4 text-sm text-zinc-800">{consignment.product?.description}</td>
+                          <td className="bg-white p-4 text-sm text-zinc-800">
+                            {consignment.product?.id}
+                          </td>
+                          <td className="bg-white p-4 text-sm text-zinc-800">
+                            {consignment.product?.description}
+                          </td>
                           <td className="h-20 sm:h-fit bg-white p-4 text-sm text-zinc-800">
                             {consignment.retailers?.name}
                           </td>
@@ -182,14 +192,21 @@ export default function Consignments() {
             viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
         </button>
         {Array.from({ length: pageCount }, (_, i) => i + 1).map((n) => (
           <button
             key={n}
             className={`cursor-pointer rounded-full w-6 h-6 text-xs flex justify-center items-center ${
-              currentPage === n ? 'bg-red-400 text-white shadow-lg shadow-red-400/50' : 'text-zinc-600'
+              currentPage === n
+                ? 'bg-red-400 text-white shadow-lg shadow-red-400/50'
+                : 'text-zinc-600'
             }`}
             onClick={() => setCurrentPage(n)}
           >
@@ -202,7 +219,9 @@ export default function Consignments() {
           disabled={currentPage === pageCount}
         >
           <svg
-            className={`w-4 h-4 ${currentPage === pageCount ? 'stroke-zinc-300' : 'stroke-zinc-700'}`}
+            className={`w-4 h-4 ${
+              currentPage === pageCount ? 'stroke-zinc-300' : 'stroke-zinc-700'
+            }`}
             fill="none"
             viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
