@@ -31,7 +31,11 @@ export default function NewSale() {
   }, [product]);
 
   async function getProductType(type) {
-    const { data: productType, error } = await supabase.from('product_types').select('*').eq('id', type).single();
+    const { data: productType, error } = await supabase
+      .from('product_types')
+      .select('*')
+      .eq('id', type)
+      .single();
     setProductType(productType.type);
   }
 
@@ -104,17 +108,20 @@ export default function NewSale() {
           .from('consignments')
           .select(
             `
-          id,
-          product (
-            description,
-            id
+              id,
+              product
+            `,
           )
-        `,
-          )
-          .eq('product.id', product.id)
+          .eq('product', product.id)
           .single();
 
-        await supabase.from('consignments').update({ active: false }).match({ id: consignment.id });
+        const { error: errorC } = await supabase
+          .from('consignments')
+          .update({ active: false })
+          .match({ id: consignment.id });
+        if (errorC) {
+          return Promise.reject();
+        }
       }
 
       setPrice(0);
@@ -145,7 +152,11 @@ export default function NewSale() {
   return (
     <div className="flex h-full w-full flex-col">
       <Loading isLoading={isLoading} />
-      <TitleNav title="Nueva Venta" back={() => goBack()} showBack={userMeta?.roles?.id === 1 || !!product} />
+      <TitleNav
+        title="Nueva Venta"
+        back={() => goBack()}
+        showBack={userMeta?.roles?.id === 1 || !!product}
+      />
       <div
         className={`flex-1 flex flex-col justify-center w-full items-center mx-auto ${
           !product ? 'max-w-xs' : 'max-w-md'
@@ -153,7 +164,9 @@ export default function NewSale() {
       >
         {!product ? (
           <>
-            <p className="text-sm text-zinc-500 mb-6">Ingresa el código del producto que vendiste</p>
+            <p className="text-sm text-zinc-500 mb-6">
+              Ingresa el código del producto que vendiste
+            </p>
             <input
               className="text-center mb-20 w-full bg-gray-200 py-3 px-5 outline-none rounded-lg text-zinc-500 tracking-wide"
               type="number"
@@ -187,13 +200,19 @@ export default function NewSale() {
           </>
         ) : (
           <div className="mb-40 w-full">
-            <label className="uppercase text-xs block mb-1 font-bold text-zinc-400 tracking-wide">{productType}</label>
-            <label className="block mb-6 text-2xl font-bold text-zinc-800 tracking-wide">{product.description}</label>
+            <label className="uppercase text-xs block mb-1 font-bold text-zinc-400 tracking-wide">
+              {productType}
+            </label>
+            <label className="block mb-6 text-2xl font-bold text-zinc-800 tracking-wide">
+              {product.description}
+            </label>
             <label className="block my-2 uppercase text-xs font-bold text-zinc-500 tracking-wide">
               ¿A qué precio vendiste el accesorio?
             </label>
             <div className="w-full rounded-lg overflow-hidden flex">
-              <span className="bg-zinc-300 flex justify-center items-center font-bold px-5 text-zinc-500">Q</span>
+              <span className="bg-zinc-300 flex justify-center items-center font-bold px-5 text-zinc-500">
+                Q
+              </span>
               <input
                 placeholder="175.00"
                 className="bg-gray-200 outline-none flex-1 py-3 px-5 text-zinc-500 tracking-wide"
