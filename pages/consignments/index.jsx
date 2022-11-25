@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -54,17 +55,20 @@ export default function Consignments() {
                 retailer,
                 product (
                     description,
-                    id
+                    id,
+                    price
                 ),
                 retailers (
                     name,
                     id
                 ),
-                active
+                active,
+                created_at
             `,
           { count: 'exact' },
         )
         .in('retailer', retailerFilter)
+        .order('id', { ascending: false })
         .eq('active', true)
         .range(from, to);
       setPageCount(getPageCount(count));
@@ -139,8 +143,14 @@ export default function Consignments() {
                           <th className="p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider">
                             Producto
                           </th>
+                          <th className="p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider">
+                            Precio
+                          </th>
                           <th className="h-20 sm:h-fit p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider">
                             Vendedora
+                          </th>
+                          <th className="h-20 sm:h-fit p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider">
+                            Fecha de Consignación
                           </th>
                           <th className="h-20 sm:h-fit p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider" />
                         </tr>
@@ -158,8 +168,14 @@ export default function Consignments() {
                           <td className="bg-white p-4 text-sm text-zinc-800">
                             {consignment.product?.description}
                           </td>
+                          <td className="bg-white p-4 text-sm text-zinc-800">
+                            {consignment.product?.price}
+                          </td>
                           <td className="h-20 sm:h-fit bg-white p-4 text-sm text-zinc-800">
                             {consignment.retailers?.name}
+                          </td>
+                          <td className="h-20 sm:h-fit bg-white p-4 text-sm text-zinc-800">
+                            {dayjs(consignment.created_at).format('DD/MM/YYYY')}
                           </td>
                           <td className="h-20 px-10 sm:h-fit bg-white p-4 text-sm text-zinc-800">
                             <button

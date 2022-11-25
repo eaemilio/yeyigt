@@ -29,8 +29,7 @@ export default function NewConsignment() {
     try {
       setIsLoading(true);
       const { data: p, error } = await supabase.from('products').select('*').eq('id', id).single();
-      // if (error || !p || p.status !== AVAILABLE) {
-      if (error || !p || p.status === SOLD) {
+      if (error || !p || p.status !== AVAILABLE) {
         return Promise.reject();
       }
       setProducts([...products, p]);
