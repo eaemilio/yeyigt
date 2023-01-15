@@ -186,7 +186,7 @@ export default function Retailer() {
       <Loading isLoading={isLoading} />
       <span className="text-2xl font-bold text-zinc-700 mb-10 flex items-center">
         {userMeta?.roles?.id === 1 && (
-          <Link href="./">
+          <Link href="./" legacyBehavior>
             <button className="bg-red-400 rounded-full text-white p-4 mr-6" type="button">
               <svg
                 className="w-6 h-6"

@@ -5,7 +5,7 @@ import Image from 'next/image';
 import ProfileAvatar from '../ProfileAvatar';
 import { SessionContext } from '../../lib/context';
 import { supabase } from '../../utils/supabaseClient';
-// import { AVAILABLE, CONSIGNMENT } from '../../utils/constants';
+import { AVAILABLE, CONSIGNMENT } from '../../utils/constants';
 import { useAuthSession } from '../../lib/hooks';
 
 export default function Dashboard(props) {
@@ -88,7 +88,7 @@ export default function Dashboard(props) {
           onClick={() => setMenuVisible(false)}
         >
           <svg
-            className="w-6 h-6 fill-zinc-100"
+            className="w-6 h-6 fill-zinc-800"
             viewBox="0 0 20 20"
             xmlns="http://www.w3.org/2000/svg"
           >

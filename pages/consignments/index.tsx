@@ -90,7 +90,7 @@ export default function Consignments() {
       <Loading isLoading={isLoading} />
       <span className="text-2xl font-bold text-zinc-700 mb-6 flex justify-between items-center">
         Mercadería en consignación
-        <Link href="/consignments/new">
+        <Link href="/consignments/new" legacyBehavior>
           <a className="bg-red-400 rounded-full text-white p-4">
             <svg
               className="w-6 h-6"

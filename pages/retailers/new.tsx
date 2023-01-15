@@ -47,7 +47,7 @@ export default function NewRetailer() {
   return (
     <div className="max-w-screen-sm mx-auto">
       <span className="text-2xl font-bold text-zinc-700 mb-10 flex items-center">
-        <Link href="./">
+        <Link href="./" legacyBehavior>
           <a className="bg-red-400 rounded-full text-white p-4 mr-6">
             <svg
               className="w-6 h-6"

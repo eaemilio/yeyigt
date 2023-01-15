@@ -1,0 +1,107 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Consignment {
+  id         BigInt    @id @default(autoincrement())
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  retailer   BigInt?
+  product    BigInt?
+  active     Boolean   @default(true)
+  products   Product?  @relation(fields: [product], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  retailers  Retailer? @relation(fields: [retailer], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("consignments")
+}
+
+model Payment {
+  id          BigInt    @id @default(autoincrement())
+  created_at  DateTime? @default(now()) @db.Timestamptz(6)
+  amount      Float     @default(0)
+  retailer_id BigInt
+  retailers   Retailer  @relation(fields: [retailer_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("payments")
+}
+
+model ProductType {
+  id         BigInt    @id @default(autoincrement())
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  type       String?
+  products   Product[]
+
+  @@map("product_types")
+}
+
+model Product {
+  id            BigInt        @id @unique @default(autoincrement())
+  created_at    DateTime?     @default(now()) @db.Timestamptz(6)
+  description   String
+  type          BigInt
+  price         Float         @default(0) @db.Real
+  status        Int?          @default(0)
+  pandora       Boolean?      @default(false)
+  product_types ProductType   @relation(fields: [type], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  consignments  Consignment[]
+  sales         Sale?
+  active        Boolean?      @default(true)
+
+  @@map("products")
+}
+
+model Profile {
+  id         String     @id @db.Uuid
+  updated_at DateTime?  @db.Timestamptz(6)
+  first_name String?
+  avatar_url String?
+  last_name  String?
+  role_id    BigInt?    @default(2)
+  roles      Role?      @relation(fields: [role_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  retailers  Retailer[]
+
+  @@map("profiles")
+}
+
+model Retailer {
+  id                 BigInt        @id @default(autoincrement())
+  created_at         DateTime?     @default(now()) @db.Timestamptz(6)
+  name               String?
+  due_amount         Float?
+  due_date           Int?          @default(1) @db.SmallInt
+  due_amount_pandora Float?
+  user_id            String?       @db.Uuid
+  profiles           Profile?      @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  consignments       Consignment[]
+  payments           Payment[]
+  sales              Sale[]
+
+  @@map("retailers")
+}
+
+model Role {
+  id         BigInt    @id @unique @default(autoincrement())
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  name       String?
+  profiles   Profile[]
+
+  @@map("roles")
+}
+
+model Sale {
+  id         BigInt    @id @default(autoincrement())
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  product_id BigInt    @unique
+  sale_price Float?    @db.Real
+  note       String?
+  client     String?
+  retailer   BigInt    @default(1)
+  products   Product   @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  retailers  Retailer  @relation(fields: [retailer], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("sales")
+}
