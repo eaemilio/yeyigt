@@ -44,7 +44,7 @@ export const getProducts = async ({
       lte: Number(year) === 0 ? undefined : lte,
       gte: Number(year) === 0 ? undefined : gte,
       type: Number(type) === 0 ? undefined : type,
-      status: status === ALL ? undefined : status,
+      status: Number(status) === ALL ? undefined : status,
     },
   });
   const { products, count } = result.data;

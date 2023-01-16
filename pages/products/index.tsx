@@ -11,9 +11,9 @@ import { getPageCount, getYearsRange } from '../../utils/helpers';
 import { supabase } from '../../utils/supabaseClient';
 import { PRODUCT_STATUS, MONTHS, PAGE_OFFSET } from '../../utils/constants';
 import { Product, ProductType } from '@prisma/client';
-import { getProducts } from '../../services/ProductService';
 import { Dropdown } from '@nextui-org/react';
 import { Selection } from '@react-types/shared/src/selection';
+import { getProducts } from '../../services/ProductService';
 
 export default function Products() {
   const [monthSelected, setMonthSelected] = useState(0);
