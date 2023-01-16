@@ -3,12 +3,12 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import ProfileAvatar from '../ProfileAvatar';
-import { SessionContext } from '../../lib/context';
+import { SessionContext, User } from '../../lib/context';
 import { supabase } from '../../utils/supabaseClient';
 import { AVAILABLE, CONSIGNMENT } from '../../utils/constants';
 import { useAuthSession } from '../../lib/hooks';
 
-export default function Dashboard(props) {
+export default function Dashboard(props: any) {
   const router = useRouter();
   const [current, setCurrent] = useState('');
   const [productCount, setProductCount] = useState(0);
@@ -35,7 +35,7 @@ export default function Dashboard(props) {
     getRetailerId(userMeta);
   }, [userMeta]);
 
-  async function getRetailerId(user) {
+  async function getRetailerId(user: User) {
     const { data } = await supabase.from('retailers').select('*').eq('user_id', user.id).single();
     setRetailerId(data?.id);
   }

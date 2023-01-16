@@ -32,6 +32,7 @@ function ProductsTable({ products }: { products: (Product & { product_types: Pro
                       <tr
                         key={Number(product.id)}
                         className="bg-white flex flex-col flex-no wrap sm:table-row rounded-l-lg sm:rounded-none mb-2 sm:mb-0"
+                        onClick={() => console.log(Number(product.id))}
                       >
                         <th className="p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider">
                           Código
