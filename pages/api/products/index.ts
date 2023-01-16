@@ -47,7 +47,7 @@ const getAll = async (
   req: NextApiRequest,
   res: NextApiResponse<{ products: Product[]; count: number } | ErrorMessage>,
 ) => {
-  const { status, search, type, lte, gte, page = 1 } = req.query;
+  const { status, search, type, lte, gte, page } = req.query;
   const where = {
     AND: [
       {
@@ -79,6 +79,14 @@ const getAll = async (
       },
     ],
   };
+
+  const paging = page
+    ? {
+        skip: (Number(page) - 1) * PAGE_OFFSET,
+        take: PAGE_OFFSET,
+      }
+    : undefined;
+
   const products = await prisma.product.findMany({
     where: {
       ...where,
@@ -89,8 +97,7 @@ const getAll = async (
     orderBy: {
       id: 'desc',
     },
-    skip: (Number(page) - 1) * PAGE_OFFSET,
-    take: PAGE_OFFSET,
+    ...paging,
   });
   const count = await prisma.product.count({
     where: { ...where },
