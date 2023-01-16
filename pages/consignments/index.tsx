@@ -56,7 +56,10 @@ export default function Consignments() {
                 product (
                     description,
                     id,
-                    price
+                    price,
+                    type (
+                      type
+                    )
                 ),
                 retailers (
                     name,
@@ -132,13 +135,16 @@ export default function Consignments() {
                 <div className="container">
                   <table className="w-full flex flex-row flex-no-wrap sm:bg-white rounded-lg overflow-hidden sm:shadow-lg sm:shadow-zinc-100/10 my-5">
                     <thead className="sm:bg-white border-b border-b-zinc-100">
-                      {consignments.map((consignment) => (
+                      {(consignments ?? []).map((consignment) => (
                         <tr
                           key={consignment.id}
                           className="bg-white flex flex-col flex-no wrap sm:table-row rounded-l-lg sm:rounded-none mb-2 sm:mb-0"
                         >
                           <th className="p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider">
                             Código de producto
+                          </th>
+                          <th className="p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider">
+                            Tipo de Producto
                           </th>
                           <th className="p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider">
                             Producto
@@ -157,13 +163,16 @@ export default function Consignments() {
                       ))}
                     </thead>
                     <tbody className="flex-1 sm:flex-none">
-                      {consignments.map((consignment) => (
+                      {(consignments ?? []).map((consignment) => (
                         <tr
                           key={consignment.id}
                           className="cursor-pointer rounded-r-xl bg-white overflow-hidden flex flex-col flex-no wrap sm:table-row mb-2 sm:mb-0"
                         >
                           <td className="bg-white p-4 text-sm text-zinc-800">
                             {consignment.product?.id}
+                          </td>
+                          <td className="bg-white p-4 text-sm text-zinc-800">
+                            {consignment.product?.type.type}
                           </td>
                           <td className="bg-white p-4 text-sm text-zinc-800">
                             {consignment.product?.description}
