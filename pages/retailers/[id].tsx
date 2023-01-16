@@ -43,7 +43,7 @@ export default function Retailer() {
   const [totalPayments, setTotalPayments] = useState(0);
   const [yearPreSelected, setYearPreSelected] = useState();
   const [monthPreSelected, setMonthPreSelected] = useState();
-  const { query } = useRouter();
+  const { query, back } = useRouter();
   const id = +query.id;
 
   const { userMeta } = useAuthSession();
@@ -186,24 +186,26 @@ export default function Retailer() {
       <Loading isLoading={isLoading} />
       <span className="text-2xl font-bold text-zinc-700 mb-10 flex items-center">
         {userMeta?.roles?.id === 1 && (
-          <Link href="./" legacyBehavior>
-            <button className="bg-red-400 rounded-full text-white p-4 mr-6" type="button">
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                />
-              </svg>
-            </button>
-          </Link>
+          <button
+            className="bg-red-400 rounded-full text-white p-4 mr-6"
+            type="button"
+            onClick={() => back()}
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+          </button>
         )}
         {retailer?.name}
       </span>

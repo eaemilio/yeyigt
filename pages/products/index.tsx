@@ -140,13 +140,14 @@ export default function Products() {
         </div>
         <div className="flex gap-2 w-full sm:w-fit">
           <div className="flex flex-col">
-            <label className="text-xs ml-2 mb-1 text-red-700">Estado</label>
+            <label className="text-xs ml-2 mb-1 text-zinc-900">Estado</label>
             <Dropdown>
-              <Dropdown.Button flat css={{ tt: 'capitalize' }}>
+              <Dropdown.Button flat css={{ tt: 'capitalize' }} color="secondary">
                 {PRODUCT_STATUS[status]}
               </Dropdown.Button>
               <Dropdown.Menu
                 aria-label="Single selection actions"
+                color="secondary"
                 disallowEmptySelection
                 selectionMode="single"
                 selectedKeys={new Set([status])}
@@ -160,14 +161,15 @@ export default function Products() {
           </div>
 
           <div className="flex flex-col">
-            <label className="text-xs ml-2 mb-1 text-red-700">Tipo</label>
+            <label className="text-xs ml-2 mb-1 text-zinc-900">Tipo</label>
             <Dropdown>
-              <Dropdown.Button flat css={{ tt: 'capitalize' }}>
+              <Dropdown.Button flat css={{ tt: 'capitalize' }} color="secondary">
                 {productTypes.find((p) => Number(p.id) === Number(typeSelected))?.type ?? 'Todos'}
               </Dropdown.Button>
               <Dropdown.Menu
                 aria-label="Single selection actions"
                 disallowEmptySelection
+                color="secondary"
                 selectionMode="single"
                 selectedKeys={new Set([typeSelected])}
                 onSelectionChange={onTypeChange}
@@ -179,14 +181,15 @@ export default function Products() {
             </Dropdown>
           </div>
           <div className="flex flex-col">
-            <label className="text-xs ml-2 mb-1 text-red-700">Año</label>
+            <label className="text-xs ml-2 mb-1 text-zinc-900">Año</label>
             <Dropdown>
-              <Dropdown.Button flat css={{ tt: 'capitalize' }}>
+              <Dropdown.Button flat css={{ tt: 'capitalize' }} color="secondary">
                 {years.find((y) => y === Number(yearSelected)) ?? 'Todos'}
               </Dropdown.Button>
               <Dropdown.Menu
                 aria-label="Single selection actions"
                 disallowEmptySelection
+                color="secondary"
                 selectionMode="single"
                 selectedKeys={new Set([yearSelected])}
                 onSelectionChange={onYearChange}
@@ -198,9 +201,9 @@ export default function Products() {
             </Dropdown>
           </div>
           <div className="flex flex-col">
-            <label className="text-xs ml-2 mb-1 text-red-700">Mes</label>
+            <label className="text-xs ml-2 mb-1 text-zinc-900">Mes</label>
             <Dropdown>
-              <Dropdown.Button flat css={{ tt: 'capitalize' }}>
+              <Dropdown.Button flat css={{ tt: 'capitalize' }} color="secondary">
                 {Number(monthSelected) ? MONTHS[monthSelected - 1] : 'Todos'}
               </Dropdown.Button>
               <Dropdown.Menu
@@ -209,6 +212,7 @@ export default function Products() {
                 disabledKeys={
                   Number(yearSelected) === 0 ? Array.from({ length: 12 }, (_, i) => i) : []
                 }
+                color="secondary"
                 selectionMode="single"
                 selectedKeys={new Set([monthSelected])}
                 onSelectionChange={onMonthChange}

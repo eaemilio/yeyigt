@@ -17,6 +17,14 @@ export default withApiAuth(
         case 'GET':
           const product = await prisma.product.findUnique({
             where: { id },
+            include: {
+              sales: {
+                include: {
+                  retailers: true,
+                },
+              },
+              consignments: true,
+            },
           });
           if (product) {
             return res.status(200).json(product);

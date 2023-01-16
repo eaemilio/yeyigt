@@ -2,16 +2,25 @@ import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 import useSWR from 'swr';
-import { Product, ProductType } from '@prisma/client';
+import { Product, ProductType, Sale, Consignment, Retailer } from '@prisma/client';
 import { useRouter } from 'next/router';
 import axios from 'axios';
+import { AVAILABLE, PRODUCT_STATUS } from '../../utils/constants';
+import { Button, Card, Dropdown, Row, Text } from '@nextui-org/react';
+import { Icon } from '@iconify/react';
+import dayjs from 'dayjs';
+import { Selection } from '@react-types/shared/src/selection';
+import Loading from '../../components/ui/Loading';
 
 export default function EditProduct() {
   const router = useRouter();
   const { id } = router.query;
 
-  const { data: productTypes = [] } = useSWR<ProductType[]>('/api/product-types');
-  const { data: product } = useSWR<Product>(id ? `/api/products/${id}` : null);
+  const { data: productTypes = [], isLoading: productTypesLoading } =
+    useSWR<ProductType[]>('/api/product-types');
+  const { data: product, isLoading: productLoading } = useSWR<
+    Product & { sales?: Sale & { retailers: Retailer }; consignments?: Consignment[] }
+  >(id ? `/api/products/${id}` : null);
 
   const [description, setDescription] = useState(product?.description ?? '');
   const [type, setType] = useState(product?.type ?? 0);
@@ -45,7 +54,7 @@ export default function EditProduct() {
     try {
       setIsLoading(true);
       await axios.put(`/api/products/${id}`, {
-        type,
+        type: Number(type),
         description,
         price,
         pandora,
@@ -58,9 +67,13 @@ export default function EditProduct() {
     }
   };
 
+  const onTypeChange = (keys: Selection) => {
+    setType(Object.values(keys)[0]);
+  };
+
   return (
-    <div className="max-w-screen-sm mx-auto">
-      <span className="text-2xl font-bold text-zinc-700 mb-10 flex items-center">
+    <div className="">
+      <span className="text-2xl font-bold text-zinc-700 mb-10 flex items-center gap-6">
         <Link href="./" legacyBehavior>
           <a className="bg-red-400 rounded-full text-white p-4 mr-6">
             <svg
@@ -79,91 +92,172 @@ export default function EditProduct() {
             </svg>
           </a>
         </Link>
-        Editar Producto
+        Editar Producto {id && `#${id}`}
+        {product && (
+          <span
+            className={`px-4 py-1 inline-flex text-xs leading-0 sm:leading-5 font-semibold rounded-full ${
+              product.status === AVAILABLE
+                ? 'bg-green-300 text-green-900'
+                : 'bg-red-300 text-red-900'
+            }`}
+          >
+            {PRODUCT_STATUS[product.status ?? 0]}
+          </span>
+        )}
       </span>
-      <div className="flex flex-col mt-8">
-        <div className="flex w-full gap-3">
-          <div className="flex-1">
-            <label
-              className="block my-2 uppercase text-xs font-bold text-zinc-500 tracking-wide"
-              htmlFor="description"
-            >
-              Descripción
-            </label>
-            <input
-              placeholder="Identifica el accesorio"
-              name="description"
-              className="w-full bg-zinc-200 py-3 px-5 outline-none rounded-lg text-zinc-500 tracking-wide"
-              value={description || ''}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </div>
-        </div>
-        <div className="flex w-full gap-3 mt-6 flex-wrap-reverse">
-          <div className="flex-3 w-full sm:w-fit">
-            <label
-              className="block my-2 uppercase text-xs font-bold text-zinc-500 tracking-wide"
-              htmlFor="price"
-            >
-              Precio
-            </label>
-            <div className="w-full rounded-lg overflow-hidden flex">
-              <span className="bg-zinc-300 flex justify-center items-center font-bold px-5 text-zinc-500">
-                Q
-              </span>
-              <input
-                placeholder="175.00"
-                className="bg-gray-200 outline-none flex-1 py-3 px-5 text-zinc-500 tracking-wide"
-                value={price || ''}
-                onChange={(e) => setPrice(+e.target.value)}
-              />
+      {productLoading || productTypesLoading ? (
+        <Loading isLoading></Loading>
+      ) : (
+        <div className="flex lg:flex-row flex-col gap-6 justify-center">
+          <Card
+            css={{
+              w: '100%',
+              p: 20,
+              flex: 2,
+              mw: product?.sales ? 2000 : 500,
+            }}
+          >
+            <Card.Header css={{ p: 10, m: 0 }}>
+              <Text b size={16}>
+                Datos de Producto
+              </Text>
+            </Card.Header>
+            <Card.Divider></Card.Divider>
+            <div className="flex flex-col mt-8">
+              <div className="flex w-full gap-3">
+                <div className="flex-1">
+                  <label
+                    className="block my-2 uppercase text-xs font-bold text-zinc-500 tracking-wide"
+                    htmlFor="description"
+                  >
+                    Descripción
+                  </label>
+                  <input
+                    placeholder="Identifica el accesorio"
+                    name="description"
+                    className="w-full bg-zinc-200 py-3 px-5 outline-none rounded-lg text-zinc-500 tracking-wide"
+                    value={description || ''}
+                    onChange={(e) => setDescription(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="flex w-full gap-3 mt-6 flex-wrap-reverse">
+                <div className="flex-3 w-full sm:w-fit">
+                  <label
+                    className="block my-2 uppercase text-xs font-bold text-zinc-500 tracking-wide"
+                    htmlFor="price"
+                  >
+                    Precio
+                  </label>
+                  <div className="w-full rounded-lg overflow-hidden flex">
+                    <span className="bg-zinc-300 flex justify-center items-center font-bold px-5 text-zinc-500">
+                      Q
+                    </span>
+                    <input
+                      placeholder="175.00"
+                      className="bg-gray-200 outline-none flex-1 py-3 px-5 text-zinc-500 tracking-wide"
+                      value={price || ''}
+                      onChange={(e) => setPrice(+e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="flex-1 min-w-1/2">
+                  <label
+                    className="block my-2 uppercase text-xs font-bold text-zinc-500 tracking-wide flex-1"
+                    htmlFor="description"
+                  >
+                    Tipo
+                  </label>
+                  <Dropdown>
+                    <Dropdown.Button flat css={{ tt: 'capitalize' }} color="secondary">
+                      {productTypes.find((p) => Number(p.id) === Number(type))?.type ?? 'Todos'}
+                    </Dropdown.Button>
+                    <Dropdown.Menu
+                      aria-label="Single selection actions"
+                      disallowEmptySelection
+                      color="secondary"
+                      selectionMode="single"
+                      selectedKeys={new Set([Number(type)])}
+                      onSelectionChange={onTypeChange}
+                    >
+                      {[{ id: 0, type: 'Todos' }, ...productTypes].map((p, index) => (
+                        <Dropdown.Item key={Number(p.id)}>{p.type}</Dropdown.Item>
+                      ))}
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </div>
+              </div>
+              <div className="flex w-full gap-3 mt-6">
+                <div className="form-check">
+                  <input
+                    className="form-check-input appearance-none h-4 w-4 border border-gray-200 rounded-md bg-white checked:bg-red-400 checked:border-red-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
+                    type="checkbox"
+                    checked={pandora ?? false}
+                    onChange={(e) => setPandora(e.target.checked)}
+                  />
+                  <label
+                    className="form-check-label inline-block uppercase text-xs text-zinc-600"
+                    htmlFor="flexCheckDefault"
+                  >
+                    Pandora
+                  </label>
+                </div>
+              </div>
+              <button
+                className="font-bold bg-red-200 rounded-lg text-red-400 px-30 py-3 w-full mt-10 hover:bg-red-100 ease-in-out duration-300 disabled:bg-gray-300 disabled:text-gray-400"
+                onClick={() => save()}
+                disabled={isLoading || !isFormValid()}
+              >
+                Guardar
+              </button>
             </div>
-          </div>
-          <div className="flex-1 min-w-1/2">
-            <label
-              className="block my-2 uppercase text-xs font-bold text-zinc-500 tracking-wide flex-1"
-              htmlFor="description"
-            >
-              Tipo
-            </label>
-            <select
-              className="relative form-select appearance-none block w-full px-5 py-3 text-base font-normal text-gray-700 bg-white bg-clip-padding bg-no-repeat rounded-lg transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none flex-1"
-              value={Number(type)}
-              onChange={(e) => setType(+e.target.value)}
-            >
-              <option value="0">Selecciona un tipo</option>
-              {productTypes.map((product) => (
-                <option value={Number(product.id)} key={Number(product.id)}>
-                  {product.type}
-                </option>
-              ))}
-            </select>
-          </div>
+          </Card>
+          {product?.sales && (
+            <Card css={{ w: '100%', flex: 1, p: 20, h: 'min-content' }} variant="shadow">
+              <Card.Header css={{ p: 10, m: 0 }}>
+                <Text b size={16}>
+                  Información de Venta
+                </Text>
+              </Card.Header>
+              <Card.Divider></Card.Divider>
+              <Card.Body>
+                <div className="w-full h-full flex flex-col gap-6">
+                  <div className="flex justify-between">
+                    <div className="flex gap-4 items-center">
+                      <Icon icon="uim:bitcoin" fontSize={24} />
+                      <Text>Precio de Venta</Text>
+                    </div>
+                    <Text b>Q{product.sales.sale_price}</Text>
+                  </div>
+                  <div className="flex justify-between">
+                    <div className="flex gap-4 items-center">
+                      <Icon icon="uim:schedule" fontSize={24} />
+                      <Text>Fecha de Venta</Text>
+                    </div>
+                    <Text b>{dayjs(product.sales.created_at).format('DD/MM/YYYY')}</Text>
+                  </div>
+                  <div className="flex justify-between">
+                    <div className="flex gap-4 items-center">
+                      <Icon icon="uim:user-arrows" fontSize={24} />
+                      <Text>Cliente</Text>
+                    </div>
+                    <Text b>{product.sales.client}</Text>
+                  </div>
+                  <div className="flex justify-between">
+                    <div className="flex gap-4 items-center">
+                      <Icon icon="uim:user-nurse" fontSize={24} />
+                      <Text>Vendedor(a)</Text>
+                    </div>
+                    <Link href={`/retailers/${product.sales.retailers.id}`}>
+                      <Text b>{product.sales.retailers.name}</Text>
+                    </Link>
+                  </div>
+                </div>
+              </Card.Body>
+            </Card>
+          )}
         </div>
-        <div className="flex w-full gap-3 mt-6">
-          <div className="form-check">
-            <input
-              className="form-check-input appearance-none h-4 w-4 border border-gray-200 rounded-md bg-white checked:bg-red-400 checked:border-red-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
-              type="checkbox"
-              checked={pandora ?? false}
-              onChange={(e) => setPandora(e.target.checked)}
-            />
-            <label
-              className="form-check-label inline-block uppercase text-xs text-zinc-600"
-              htmlFor="flexCheckDefault"
-            >
-              Pandora
-            </label>
-          </div>
-        </div>
-        <button
-          className="font-bold bg-red-200 rounded-lg text-red-400 px-30 py-3 w-full mt-20 hover:bg-red-100 ease-in-out duration-300 disabled:bg-gray-300 disabled:text-gray-400"
-          onClick={() => save()}
-          disabled={isLoading || !isFormValid()}
-        >
-          Guardar
-        </button>
-      </div>
+      )}
     </div>
   );
 }
