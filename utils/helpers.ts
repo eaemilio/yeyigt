@@ -9,6 +9,12 @@ import TagIcon from '../components/dashboard/icons/TagIcon';
 import NecklaceIcon from '../components/dashboard/NecklaceIcon';
 import { DEFAULT_PAGE_SIZE, MIN_YEAR } from './constants';
 
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
 export const formatDate = (date: string) => moment(date).format('DD/MM/YYYY');
 
 export const getYearsRange = (currentYear: number, minYear?: number) => {
@@ -72,7 +78,7 @@ export const getDateLimits = (date?: string) => {
     return { gte: undefined, lte: undefined };
   }
 
-  const d = dayjs(date);
+  const d = dayjs(date).tz('america/toronto');
 
   console.log(`CURRENT DATE`, d.toISOString());
 
