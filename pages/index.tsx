@@ -56,7 +56,7 @@ export default function Home() {
           )}
         </div>
       </div>
-      <Card.Divider></Card.Divider>
+      {lastMonthSales && currentMonthSales && <Card.Divider></Card.Divider>}
       <div className="mt-6 grid w-full gap-2 relative grid-cols-1 sm:grid-cols-3">
         <Loading isLoading={productsLoading || typesLoading} className="rounded-2xl" />
         {productTypes.map((t, i) => (

@@ -34,7 +34,9 @@ export default function SalesCard({ lastMonth, currentMonth, count = false }: Pr
 
   return (
     <div className="shadow-md ease-in-out duration-300 py-6 px-8 rounded-lg flex flex-col justify-between items-start bg-white">
-      <p className="text-xs font-bold tracking-wide">Productos Vendidos</p>
+      <p className="text-xs font-bold tracking-wide">
+        {count ? 'Productos Vendidos' : 'Ventas este mes'}
+      </p>
       <p className="text-4xl font-bold mt-6">
         {count ? '' : 'Q'} {numberWithCommas(currentTotal)}
       </p>

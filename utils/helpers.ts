@@ -74,6 +74,8 @@ export const getDateLimits = (date?: string) => {
 
   const d = dayjs(date);
 
+  console.log(`CURRENT DATE`, d.toISOString());
+
   const gte = dayjs(`${d.month() + 1}-01-${d.year()}`).toISOString();
   const lte = d.toISOString();
   return { gte, lte };
