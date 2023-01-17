@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import moment from 'moment';
 import 'moment/locale/es';
 import BraceletIcon from '../components/dashboard/icons/Bracelet';
@@ -8,9 +9,9 @@ import TagIcon from '../components/dashboard/icons/TagIcon';
 import NecklaceIcon from '../components/dashboard/NecklaceIcon';
 import { DEFAULT_PAGE_SIZE, MIN_YEAR } from './constants';
 
-export const formatDate = (date) => moment(date).format('DD/MM/YYYY');
+export const formatDate = (date: string) => moment(date).format('DD/MM/YYYY');
 
-export const getYearsRange = (currentYear, minYear) => {
+export const getYearsRange = (currentYear: number, minYear?: number) => {
   const years = [];
   let startYear = minYear || MIN_YEAR;
   while (startYear <= currentYear) {
@@ -19,7 +20,13 @@ export const getYearsRange = (currentYear, minYear) => {
   return years;
 };
 
-export const getPagination = ({ page, size = DEFAULT_PAGE_SIZE }) => {
+export const getPagination = ({
+  page,
+  size = DEFAULT_PAGE_SIZE,
+}: {
+  page: number;
+  size: number;
+}) => {
   const limit = size ? +size : DEFAULT_PAGE_SIZE;
   const from = page ? (page - 1) * limit : 0;
   const to = page ? from + size - 1 : size - 1;
@@ -27,14 +34,14 @@ export const getPagination = ({ page, size = DEFAULT_PAGE_SIZE }) => {
   return { from, to };
 };
 
-export const getPageCount = (count, pageSize = DEFAULT_PAGE_SIZE) => {
+export const getPageCount = (count: number, pageSize = DEFAULT_PAGE_SIZE) => {
   if (count === 0) {
     return 1;
   }
   return count % pageSize === 0 ? count / pageSize : ~~(count / pageSize) + 1;
 };
 
-export const getTypeIcon = (id) => {
+export const getTypeIcon = (id: number) => {
   switch (id) {
     case 2:
       return BraceletIcon;
@@ -53,9 +60,21 @@ export const getTypeIcon = (id) => {
   }
 };
 
-export const findTotalSum = (array) => [...array].reduce((sum, a) => sum + a, 0);
+export const findTotalSum = (array: number[]) => [...array].reduce((sum, a) => sum + a, 0);
 
-export const numberWithCommas = (x) => x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+export const numberWithCommas = (x: number) => x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
-export const getDebt = (gramPrice, totalSales, pandora) =>
+export const getDebt = (gramPrice: number, totalSales: number, pandora: boolean) =>
   (totalSales / (pandora ? 65 : 60)) * gramPrice;
+
+export const getDateLimits = (date?: string) => {
+  if (!date) {
+    return { gte: undefined, lte: undefined };
+  }
+
+  const d = dayjs(date);
+
+  const gte = dayjs(`${d.month() + 1}-01-${d.year()}`).toISOString();
+  const lte = d.toISOString();
+  return { gte, lte };
+};
