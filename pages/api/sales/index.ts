@@ -42,6 +42,7 @@ const getAll = async (
   };
 
   const { lte, gte } = getDateLimits(date);
+  console.log({ lte, gte });
 
   const where = {
     created_at: {
