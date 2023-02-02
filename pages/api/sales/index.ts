@@ -11,26 +11,21 @@ import dayjs from 'dayjs';
   return this.toString();
 };
 
-export default withApiAuth(
-  async (req: NextApiRequest, res: NextApiResponse<Sale[] | Sale | ErrorMessage>) => {
-    try {
-      switch (req.method) {
-        case 'GET':
-          await getAll(
-            req,
-            res as NextApiResponse<{ sales: Sale[]; count: number } | ErrorMessage>,
-          );
-          break;
-        default:
-          res.status(HTTP_CODES.METHOD_NOT_ALLOWED).json(METHOD_NOT_ALLOWED_ERROR);
-          break;
-      }
-    } catch (error) {
-      console.log('SALES ERROR - ', error);
-      res.status(HTTP_CODES.SERVER_ERROR).json({ error });
+export default async (req: NextApiRequest, res: NextApiResponse<Sale[] | Sale | ErrorMessage>) => {
+  try {
+    switch (req.method) {
+      case 'GET':
+        await getAll(req, res as NextApiResponse<{ sales: Sale[]; count: number } | ErrorMessage>);
+        break;
+      default:
+        res.status(HTTP_CODES.METHOD_NOT_ALLOWED).json(METHOD_NOT_ALLOWED_ERROR);
+        break;
     }
-  },
-);
+  } catch (error) {
+    console.log('SALES ERROR - ', error);
+    res.status(HTTP_CODES.SERVER_ERROR).json({ error });
+  }
+};
 
 const getAll = async (
   req: NextApiRequest,

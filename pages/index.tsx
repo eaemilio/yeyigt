@@ -18,18 +18,29 @@ export default function Home() {
     products: (Product & { product_types: ProductType })[];
     count: number;
   }>(`api/products?status=${AVAILABLE}`);
-  const { data: productTypes = [], isLoading: typesLoading } =
-    useSWR<ProductType[]>('api/product-types');
+  const {
+    data: productTypes = [],
+    isLoading: typesLoading,
+    error: typesError,
+  } = useSWR<ProductType[]>('api/product-types');
 
   const currentDate = dayjs(`${dayjs().month() + 1}-${dayjs().date()}-${dayjs().year()}`);
   const lastDate = currentDate.add(-1, 'month');
 
-  const { data: currentMonthSales, isLoading: currentSalesLoading } = useSWR<{
+  const {
+    data: currentMonthSales = { sales: [], count: 0 },
+    isLoading: currentSalesLoading,
+    error: currentMonthSalesError,
+  } = useSWR<{
     sales: Sale[];
     count: number;
   }>(`api/sales?date=${currentDate.format('MM-DD-YYYY')}`);
 
-  const { data: lastMonthSales, isLoading: lastSalesLoading } = useSWR<{
+  const {
+    data: lastMonthSales = { sales: [], count: 0 },
+    isLoading: lastSalesLoading,
+    error: lastMonthSalesError,
+  } = useSWR<{
     sales: Sale[];
     count: number;
   }>(`api/sales?date=${lastDate.format('MM-DD-YYYY')}`);
@@ -42,12 +53,12 @@ export default function Home() {
     <div className="flex flex-col flex-1 h-full w-full container md:max-w-3xl mx-auto">
       <div className="w-full gap-2 relative mt-4 flex h-min-content mb-6">
         <div className="flex-1">
-          {lastMonthSales && currentMonthSales && (
+          {!lastMonthSalesError && lastMonthSales && currentMonthSales && (
             <SalesCard lastMonth={lastMonthSales} currentMonth={currentMonthSales}></SalesCard>
           )}
         </div>
         <div className="flex-1">
-          {lastMonthSales && currentMonthSales && (
+          {!currentMonthSalesError && lastMonthSales && currentMonthSales && (
             <SalesCard
               lastMonth={lastMonthSales}
               currentMonth={currentMonthSales}
@@ -59,16 +70,17 @@ export default function Home() {
       {lastMonthSales && currentMonthSales && <Card.Divider></Card.Divider>}
       <div className="mt-6 grid w-full gap-2 relative grid-cols-1 sm:grid-cols-3">
         <Loading isLoading={productsLoading || typesLoading} className="rounded-2xl" />
-        {productTypes.map((t, i) => (
-          <ProductCard
-            key={i}
-            Icon={getTypeIcon(Number(t.id))}
-            count={getTypeCount(Number(t.id)) ?? 'Loading...'}
-            title={`${t.type}` ?? 'Loading...'}
-            onClick={() => setActiveType(Number(t.id))}
-            active={activeType === Number(t.id)}
-          />
-        ))}
+        {!typesError &&
+          productTypes.map((t, i) => (
+            <ProductCard
+              key={i}
+              Icon={getTypeIcon(Number(t.id))}
+              count={getTypeCount(Number(t.id)) ?? 'Loading...'}
+              title={`${t.type}` ?? 'Loading...'}
+              onClick={() => setActiveType(Number(t.id))}
+              active={activeType === Number(t.id)}
+            />
+          ))}
       </div>
     </div>
   );

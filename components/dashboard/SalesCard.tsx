@@ -20,7 +20,7 @@ export default function SalesCard({ lastMonth, currentMonth, count = false }: Pr
     () =>
       count
         ? currentMonth.count
-        : currentMonth.sales.reduce((sum, current) => sum + (current.sale_price ?? 0), 0),
+        : currentMonth.sales?.reduce((sum, current) => sum + (current.sale_price ?? 0), 0),
     [currentMonth],
   );
 
@@ -28,7 +28,7 @@ export default function SalesCard({ lastMonth, currentMonth, count = false }: Pr
     () =>
       count
         ? lastMonth.count
-        : lastMonth.sales.reduce((sum, current) => sum + (current.sale_price ?? 0), 0),
+        : lastMonth.sales?.reduce((sum, current) => sum + (current.sale_price ?? 0), 0),
     [lastMonth],
   );
 
@@ -41,25 +41,29 @@ export default function SalesCard({ lastMonth, currentMonth, count = false }: Pr
         {count ? '' : 'Q'} {numberWithCommas(currentTotal)}
       </p>
       <p className="flex justify-center items-center mt-6">
-        <span
-          className={`px-2 inline-flex text-xs gap-1 leading-0 tracking-normal sm:leading-5 font-semibold rounded-full flex justify-center items-center ${
-            currentTotal > lastTotal ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-          }`}
-        >
-          <Icon
-            icon={
-              currentTotal > lastTotal
-                ? 'material-symbols:trending-up-rounded'
-                : 'material-symbols:trending-down-rounded'
-            }
-            fontSize={16}
-          />{' '}
-          {(((currentTotal - lastTotal) / lastTotal) * 100).toFixed(0)}%
-        </span>
-        <span className="ml-1 text-xs tracking-normal">
-          vs último mes ({count ? '' : 'Q'}
-          {numberWithCommas(lastTotal)})
-        </span>
+        {currentTotal !== 0 && (
+          <span
+            className={`px-2 inline-flex text-xs gap-1 leading-0 tracking-normal sm:leading-5 font-semibold rounded-full flex justify-center items-center ${
+              currentTotal > lastTotal ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+            }`}
+          >
+            <Icon
+              icon={
+                currentTotal > lastTotal
+                  ? 'material-symbols:trending-up-rounded'
+                  : 'material-symbols:trending-down-rounded'
+              }
+              fontSize={16}
+            />{' '}
+            {(((currentTotal - lastTotal) / lastTotal) * 100).toFixed(0)}%
+          </span>
+        )}
+        {currentTotal !== 0 && (
+          <span className="ml-1 text-xs tracking-normal">
+            vs último mes ({count ? '' : 'Q'}
+            {numberWithCommas(lastTotal)})
+          </span>
+        )}
       </p>
     </div>
   );
