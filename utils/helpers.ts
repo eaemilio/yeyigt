@@ -78,11 +78,9 @@ export const getDateLimits = (date?: string) => {
     return { gte: undefined, lte: undefined };
   }
 
-  const d = dayjs.tz(`${date} 23:59`);
+  const d = dayjs.tz(`${date} 23:59`, 'America/Guatemala');
 
-  console.log(`CURRENT DATE`, d.toISOString());
-
-  const gte = dayjs.tz(`${d.month() + 1}-01-${d.year()} 23:59`).toISOString();
+  const gte = dayjs.tz(`${d.month() + 1}-01-${d.year()} 23:59`, 'America/Guatemala').toISOString();
   const lte = d.toISOString();
   return { gte, lte };
 };
