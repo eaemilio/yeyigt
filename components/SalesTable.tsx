@@ -4,6 +4,10 @@ import { useFilter, useSelect } from 'react-supabase';
 import { MONTHS } from '../utils/constants';
 import { getPageCount, getPagination, getYearsRange } from '../utils/helpers';
 import Select from './ui/Select';
+import useDeviceDetect from '../hooks/useDeviceDetect';
+import { Collapse, Dropdown, Text } from '@nextui-org/react';
+import { Product, Retailer, Sale } from '@prisma/client';
+import { Selection } from '@react-types/shared/src/selection';
 
 export default function SalesTable({
   setIsLoading,
@@ -14,9 +18,10 @@ export default function SalesTable({
 }) {
   const [monthSelected, setMonthSelected] = useState(moment().month() + 1);
   const [yearSelected, setYearSelected] = useState(moment().year());
-  const [years, setYears] = useState([]);
+  const [years, setYears] = useState<number[]>([]);
   const [pageCount, setPageCount] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
+  const { isMobile } = useDeviceDetect();
 
   const filter = useFilter(
     (query) => {
@@ -38,7 +43,9 @@ export default function SalesTable({
     },
     [retailer, yearSelected, monthSelected, currentPage],
   );
-  const [{ count, data: sales = [], fetching }] = useSelect('sales', {
+  const [{ count, data: sales = [], fetching }] = useSelect<
+    Sale & { products: Product; retailer: Retailer }
+  >('sales', {
     columns: `
       id,
       sale_price,
@@ -88,11 +95,13 @@ export default function SalesTable({
     setYears(range);
   }, []);
 
-  function onMonthChange(month) {
+  function onMonthChange(keys: Selection) {
+    const month = Object.values(keys)[0];
     setMonthSelected(month);
   }
 
-  function onYearChange(year) {
+  function onYearChange(keys: Selection) {
+    const year = Object.values(keys)[0];
     setYearSelected(year);
   }
 
@@ -101,20 +110,49 @@ export default function SalesTable({
       <div className="w-full flex justify-between items-center">
         <span className="text-xl font-bold text-zinc-700">{tableTitle}</span>
         <div className="flex gap-2">
-          <Select label="Año" value={yearSelected} onChange={(year) => onYearChange(+year)}>
-            {years.map((y) => (
-              <option key={y} value={y}>
-                {y}
-              </option>
-            ))}
-          </Select>
-          <Select label="Mes" value={monthSelected} onChange={(mo) => onMonthChange(+mo)}>
-            {MONTHS.map((m, i) => (
-              <option key={m} value={i + 1}>
-                {m}
-              </option>
-            ))}
-          </Select>
+          <div className="flex flex-col">
+            <label className="text-xs ml-2 mb-1 text-zinc-900">Año</label>
+            <Dropdown>
+              <Dropdown.Button flat css={{ tt: 'capitalize' }} color="secondary">
+                {years.find((y) => y === Number(yearSelected)) ?? 'Todos'}
+              </Dropdown.Button>
+              <Dropdown.Menu
+                aria-label="Single selection actions"
+                disallowEmptySelection
+                color="secondary"
+                selectionMode="single"
+                selectedKeys={new Set([yearSelected])}
+                onSelectionChange={onYearChange}
+              >
+                {years.map((year) => (
+                  <Dropdown.Item key={year}>{year}</Dropdown.Item>
+                ))}
+              </Dropdown.Menu>
+            </Dropdown>
+          </div>
+          <div className="flex flex-col">
+            <label className="text-xs ml-2 mb-1 text-zinc-900">Mes</label>
+            <Dropdown>
+              <Dropdown.Button flat css={{ tt: 'capitalize' }} color="secondary">
+                {Number(monthSelected) ? MONTHS[monthSelected - 1] : 'Todos'}
+              </Dropdown.Button>
+              <Dropdown.Menu
+                aria-label="Single selection actions"
+                disallowEmptySelection
+                disabledKeys={
+                  Number(yearSelected) === 0 ? Array.from({ length: 12 }, (_, i) => i) : []
+                }
+                color="secondary"
+                selectionMode="single"
+                selectedKeys={new Set([monthSelected])}
+                onSelectionChange={onMonthChange}
+              >
+                {MONTHS.map((month, index) => (
+                  <Dropdown.Item key={index + 1}>{month}</Dropdown.Item>
+                ))}
+              </Dropdown.Menu>
+            </Dropdown>
+          </div>
         </div>
       </div>
       <div className="flex flex-col">
@@ -123,58 +161,94 @@ export default function SalesTable({
             <div className="overflow-hidden sm:rounded-lg">
               <div className="flex items-center justify-center">
                 <div className="container">
-                  <table className="w-full flex flex-row flex-no-wrap sm:bg-white rounded-lg overflow-hidden sm:shadow-lg sm:shadow-zinc-100/10 my-5">
-                    <thead className="sm:bg-white border-b border-b-zinc-100">
-                      {sales.map((sale) => (
-                        <tr
-                          key={sale.id}
-                          className="bg-white flex flex-col flex-no wrap sm:table-row rounded-l-lg sm:rounded-none mb-2 sm:mb-0"
-                        >
-                          <th className="p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider">
-                            Producto
-                          </th>
-                          <th className="p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider">
-                            Descripción Producto
-                          </th>
-                          <th className="h-20 sm:h-fit p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider">
-                            Vendedor(a)
-                          </th>
-                          <th className="p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider">
-                            Valor Producto
-                          </th>
-                          <th className="p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider">
-                            Precio de Venta
-                          </th>
-                          <th className="p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider">
-                            Cliente
-                          </th>
-                        </tr>
-                      ))}
-                    </thead>
-                    <tbody className="flex-1 sm:flex-none">
-                      {sales.map((sale) => (
-                        <tr
-                          key={sale.id}
-                          className="rounded-r-xl bg-white overflow-hidden flex flex-col flex-no wrap sm:table-row mb-2 sm:mb-0"
-                        >
-                          <td className="bg-white p-4 text-sm text-zinc-800">{sale.products.id}</td>
-                          <td className="h-20 sm:h-fit bg-white p-4 text-sm text-zinc-800">
-                            {sale.products.description}
-                          </td>
-                          <td className="bg-white p-4 text-sm text-zinc-800">
-                            {sale.retailer?.name}
-                          </td>
-                          <td className="bg-white p-4 text-sm text-zinc-800 text-ellipsis overflow-hidden break-all">
-                            Q{sale.products.price.toFixed(2)}
-                          </td>
-                          <td className="bg-white p-4 text-sm text-zinc-800">
-                            Q{sale.sale_price.toFixed(2)}
-                          </td>
-                          <td className="bg-white p-4 text-sm text-zinc-800">{sale.client}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                  {!isMobile && (
+                    <table className="w-full flex flex-row flex-no-wrap sm:bg-white rounded-lg overflow-hidden sm:shadow-lg sm:shadow-zinc-100/10 my-5">
+                      <thead className="sm:bg-white border-b border-b-zinc-100">
+                        {(sales ?? []).map((sale) => (
+                          <tr
+                            key={Number(sale.id)}
+                            className="bg-white flex flex-col flex-no wrap sm:table-row rounded-l-lg sm:rounded-none mb-2 sm:mb-0"
+                          >
+                            <th className="p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider">
+                              Producto
+                            </th>
+                            <th className="p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider">
+                              Descripción Producto
+                            </th>
+                            <th className="h-20 sm:h-fit p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider">
+                              Vendedor(a)
+                            </th>
+                            <th className="p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider">
+                              Valor Producto
+                            </th>
+                            <th className="p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider">
+                              Precio de Venta
+                            </th>
+                            <th className="p-4 sm:px-6 sm:py-4 text-left text-sm font-light sm:text-xs sm:font-medium text-gray-500 sm:uppercase sm:tracking-wider">
+                              Cliente
+                            </th>
+                          </tr>
+                        ))}
+                      </thead>
+                      <tbody className="flex-1 sm:flex-none">
+                        {(sales ?? []).map((sale) => (
+                          <tr
+                            key={Number(sale.id)}
+                            className="rounded-r-xl bg-white overflow-hidden flex flex-col flex-no wrap sm:table-row mb-2 sm:mb-0"
+                          >
+                            <td className="bg-white p-4 text-sm text-zinc-800">
+                              {Number(sale.products.id)}
+                            </td>
+                            <td className="h-20 sm:h-fit bg-white p-4 text-sm text-zinc-800">
+                              {sale.products.description}
+                            </td>
+                            <td className="bg-white p-4 text-sm text-zinc-800">
+                              {sale.retailer?.name}
+                            </td>
+                            <td className="bg-white p-4 text-sm text-zinc-800 text-ellipsis overflow-hidden break-all">
+                              Q{sale.products.price.toFixed(2)}
+                            </td>
+                            <td className="bg-white p-4 text-sm text-zinc-800">
+                              Q{sale.sale_price?.toFixed(2)}
+                            </td>
+                            <td className="bg-white p-4 text-sm text-zinc-800">{sale.client}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+
+                  {isMobile && (
+                    <Collapse.Group className="my-2">
+                      {sales &&
+                        sales.map((sale) => (
+                          <Collapse
+                            key={Number(sale.id)}
+                            title={<Text h6>{`#${sale.products.id}`}</Text>}
+                            subtitle={sale.products.description}
+                          >
+                            <div className="px-6">
+                              <div className="flex justify-between items-center">
+                                <Text weight="bold">Vendedora</Text>
+                                <Text>{sale.retailer.name ?? ''}</Text>
+                              </div>
+                              <div className="flex justify-between items-center">
+                                <Text weight="bold">Cliente</Text>
+                                <Text>{sale.client}</Text>
+                              </div>
+                              <div className="flex justify-between items-center">
+                                <Text weight="bold">Valor de Producto</Text>
+                                <Text>Q{sale.products.price.toFixed(2)}</Text>
+                              </div>
+                              <div className="flex justify-between items-center">
+                                <Text weight="bold">Precio de Venta</Text>
+                                <Text>Q{sale.sale_price?.toFixed(2)}</Text>
+                              </div>
+                            </div>
+                          </Collapse>
+                        ))}
+                    </Collapse.Group>
+                  )}
                 </div>
               </div>
             </div>

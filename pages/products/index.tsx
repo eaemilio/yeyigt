@@ -8,7 +8,6 @@ import Loading from '../../components/ui/Loading';
 import Select from '../../components/ui/Select';
 import { useAuthSession } from '../../lib/hooks';
 import { getPageCount, getYearsRange } from '../../utils/helpers';
-import { supabase } from '../../utils/supabaseClient';
 import { PRODUCT_STATUS, MONTHS, PAGE_OFFSET } from '../../utils/constants';
 import { Product, ProductType } from '@prisma/client';
 import { Dropdown } from '@nextui-org/react';
@@ -83,7 +82,7 @@ export default function Products() {
     setCurrentPage(1);
   }
 
-  function handleKeyDown(event: KeyboardEvent) {
+  function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
     if (event.key === 'Enter') {
       setSearch(searchText);
     }
@@ -138,7 +137,7 @@ export default function Products() {
             />
           </svg>
         </div>
-        <div className="flex gap-2 w-full sm:w-fit">
+        <div className="flex gap-4 w-full sm:w-fit flex-wrap md:gap-2 justify-center md:justify-start">
           <div className="flex flex-col">
             <label className="text-xs ml-2 mb-1 text-zinc-900">Estado</label>
             <Dropdown>

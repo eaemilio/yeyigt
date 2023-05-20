@@ -15,7 +15,7 @@ import timezone from 'dayjs/plugin/timezone';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-export const formatDate = (date: string) => moment(date).format('DD/MM/YYYY');
+export const formatDate = (date: Date | null) => moment(date).format('DD/MM/YYYY');
 
 export const getYearsRange = (currentYear: number, minYear?: number) => {
   const years = [];
@@ -31,7 +31,7 @@ export const getPagination = ({
   size = DEFAULT_PAGE_SIZE,
 }: {
   page: number;
-  size: number;
+  size?: number;
 }) => {
   const limit = size ? +size : DEFAULT_PAGE_SIZE;
   const from = page ? (page - 1) * limit : 0;
