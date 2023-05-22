@@ -1,7 +1,7 @@
 module.exports = {
   reactStrictMode: true,
   images: {
-    domains: ['lh3.googleusercontent.com', 'supabase-cdn.vercel.app'],
+    domains: ['lh3.googleusercontent.com', 'supabase-cdn.vercel.app', 'fcriikwtewdpzbifahnv.supabase.co'],
   },
   eslint: {
     // Warning: This allows production builds to successfully complete even if

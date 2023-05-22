@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 import { supabase } from '../../utils/supabaseClient';
+import { ProductType } from '@prisma/client';
 
 export default function NewProduct() {
-  const [productTypes, setProductTypes] = useState([]);
+  const [productTypes, setProductTypes] = useState<ProductType[]>([]);
   const [description, setDescription] = useState('');
   const [type, setType] = useState(0);
   const [price, setPrice] = useState(0);
@@ -17,8 +18,12 @@ export default function NewProduct() {
   }, []);
 
   async function getProductTypes() {
-    const { data: productTypes, error } = await supabase.from('product_types').select('*');
-    setProductTypes(productTypes);
+    const { data: productTypes = [], error } = await supabase
+      .from<ProductType>('product_types')
+      .select('*');
+    if (productTypes) {
+      setProductTypes(productTypes);
+    }
   }
 
   function save() {
@@ -45,12 +50,14 @@ export default function NewProduct() {
       const { data, error } = await supabase
         .from('products')
         .insert(values, { returning: 'representation' });
-      toast.success(`Código de producto: ${data[0].id}`, { duration: 7000 });
-      setCreated(data[0]);
-      setDescription('');
-      setType('');
-      setPrice('');
-      setPandora(false);
+      if (data) {
+        toast.success(`Código de producto: ${data[0].id}`, { duration: 7000 });
+        setCreated(data[0]);
+        setDescription('');
+        setType(0);
+        setPrice(0);
+        setPandora(false);
+      }
       if (error) {
         return Promise.reject();
       }
@@ -119,7 +126,7 @@ export default function NewProduct() {
                 placeholder="175.00"
                 className="bg-gray-200 outline-none flex-1 py-3 px-5 text-zinc-500 tracking-wide"
                 value={price || ''}
-                onChange={(e) => setPrice(e.target.value)}
+                onChange={(e) => setPrice(+e.target.value)}
               />
             </div>
           </div>
@@ -133,11 +140,11 @@ export default function NewProduct() {
             <select
               className="relative form-select appearance-none block w-full px-5 py-3 text-base font-normal text-gray-700 bg-white bg-clip-padding bg-no-repeat rounded-lg transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none flex-1"
               value={type}
-              onChange={(e) => setType(e.target.value)}
+              onChange={(e) => setType(+e.target.value)}
             >
               <option value="0">Selecciona un tipo</option>
               {productTypes.map((product) => (
-                <option value={product.id} key={product.id}>
+                <option value={Number(product.id)} key={Number(product.id)}>
                   {product.type}
                 </option>
               ))}
@@ -149,7 +156,7 @@ export default function NewProduct() {
             <input
               className="form-check-input appearance-none h-4 w-4 border border-gray-200 rounded-md bg-white checked:bg-red-400 checked:border-red-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
               type="checkbox"
-              value={pandora}
+              value={Number(pandora)}
               onChange={(e) => setPandora(e.target.checked)}
             />
             <label
