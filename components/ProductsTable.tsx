@@ -135,6 +135,10 @@ function ProductsTable({ products }: { products: (Product & { product_types: Pro
                             <Text>{product.product_types?.type ?? ''}</Text>
                           </div>
                           <div className="flex justify-between items-center">
+                            <Text weight="bold">Precio</Text>
+                            <Text>Q.{product.price}</Text>
+                          </div>
+                          <div className="flex justify-between items-center">
                             <Text weight="bold">Fecha de Creación</Text>
                             <Text>{formatDate(product.created_at)}</Text>
                           </div>
