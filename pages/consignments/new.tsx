@@ -5,34 +5,40 @@ import toast from 'react-hot-toast';
 import ProductsTable from '../../components/ProductsTable';
 import Loading from '../../components/ui/Loading';
 import TitleNav from '../../components/ui/Title';
-import { AVAILABLE, CONSIGNMENT, SOLD } from '../../utils/constants';
+import { AVAILABLE, CONSIGNMENT } from '../../utils/constants';
 import { supabase } from '../../utils/supabaseClient';
+import { Product, ProductType, Retailer } from '@prisma/client';
+import { useSelect } from 'react-supabase';
+import axios from 'axios';
+import { Text } from '@nextui-org/react';
+
+type ExtendedProduct = Product & { product_types: ProductType };
+type ConsignmentForm = {
+  productId: string;
+  retailer: number;
+};
 
 export default function NewConsignment() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [products, setProducts] = useState([]);
-  const [retailers, setRetailers] = useState([]);
+  const [products, setProducts] = useState<ExtendedProduct[]>([]);
+
+  const [{ data: retailers }] = useSelect<Retailer>('retailers');
 
   const {
     register,
     handleSubmit,
     getValues,
+    setValue,
     formState: { isValid },
-  } = useForm();
+  } = useForm<ConsignmentForm>();
 
-  useEffect(() => {
-    getRetailers();
-  }, []);
-
-  async function getProductById(id) {
+  async function getProductById(id: number) {
     try {
       setIsLoading(true);
-      const { data: p, error } = await supabase.from('products').select('*').eq('id', id).single();
-      if (error || !p || p.status !== AVAILABLE) {
-        return Promise.reject();
-      }
-      setProducts([...products, p]);
+      const { data } = await axios.get<ExtendedProduct>(`/api/products/${id}`);
+      setProducts([data, ...products]);
+      setValue('productId', '');
       return Promise.resolve();
     } catch (error) {
       return Promise.reject();
@@ -73,38 +79,33 @@ export default function NewConsignment() {
     }
   };
 
-  const addProduct = async ({ productId }) => {
-    if (products.find((p) => p.id === +productId)) {
+  const addProduct = async ({ productId }: ConsignmentForm) => {
+    if (products.find((p) => Number(p.id) === +productId)) {
       return;
     }
-    toast.promise(getProductById(productId), {
+    toast.promise(getProductById(+productId), {
       loading: 'Buscando el producto...',
       success: <b>Se encontró un producto.</b>,
       error: <b>Producto no disponible.</b>,
     });
   };
 
-  const getRetailers = async () => {
-    const { data } = await supabase.from('retailers').select('*');
-    setRetailers(data);
-  };
-
-  const onRemove = (product) => {
-    setProducts(products.filter((p) => p.id !== product.id));
+  const onRemove = (id: number) => {
+    setProducts(products.filter((p) => Number(p.id) !== id));
   };
 
   return (
     <div className="flex h-full w-full flex-col">
       <Loading isLoading={isLoading} />
-      <TitleNav title="Nueva Venta" back={() => router.back()} showBack />
+      <TitleNav title="Nueva Consignación" back={() => router.back()} showBack />
       <form onSubmit={handleSubmit(addProduct)} className="flex w-full gap-4">
         <select
           {...register('retailer')}
           className="form-select appearance-none block px-5 py-3 text-base font-normal text-gray-700 bg-white bg-clip-padding bg-no-repeat rounded-lg transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none Sflex-1"
         >
           <option value="0">Selecciona una vendedora</option>
-          {retailers.map((r) => (
-            <option value={r.id} key={r.id}>
+          {(retailers ?? []).map((r) => (
+            <option value={Number(r.id)} key={Number(r.id)}>
               {r.name}
             </option>
           ))}
@@ -129,7 +130,10 @@ export default function NewConsignment() {
           onClick={save}
         />
       </form>
-      <ProductsTable products={products} removable onRemove={onRemove} />
+      <ProductsTable products={products} onRemove={onRemove} />
+      <Text size={'$xs'} b className="ml-2">
+        Cantidad de Productos: {products.length}
+      </Text>
     </div>
   );
 }

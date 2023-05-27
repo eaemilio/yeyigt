@@ -23,6 +23,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<Product | ErrorM
               },
             },
             consignments: true,
+            product_types: true,
           },
         });
         if (product) {

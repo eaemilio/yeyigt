@@ -13,6 +13,7 @@ import { Product, ProductType } from '@prisma/client';
 import { Dropdown } from '@nextui-org/react';
 import { Selection } from '@react-types/shared/src/selection';
 import { getProducts } from '../../services/ProductService';
+import axios from 'axios';
 
 export default function Products() {
   const [monthSelected, setMonthSelected] = useState(0);
@@ -86,6 +87,18 @@ export default function Products() {
     if (event.key === 'Enter') {
       setSearch(searchText);
     }
+  }
+
+  function onRemove(id: number) {
+    toast.promise(remove(id), {
+      loading: 'Eliminando...',
+      success: <b>El producto se ha eliminado</b>,
+      error: <b>Ocurrió un error, vuelve a intentarlo</b>,
+    });
+  }
+
+  async function remove(id: number) {
+    await axios.delete(`/api/products/${id}`);
   }
 
   return (
@@ -224,7 +237,7 @@ export default function Products() {
           </div>
         </div>
       </div>
-      <ProductsTable products={products} />
+      <ProductsTable products={products} onRemove={onRemove} />
       <div className="flex justify-end text-sm text-zinc-600">
         Total de resultados: {productsData?.count ?? 0}
       </div>

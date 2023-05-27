@@ -11,22 +11,17 @@ import useDeviceDetect from '../hooks/useDeviceDetect';
 import { Button, Collapse, Text } from '@nextui-org/react';
 import TypeIcon from './dashboard/icons/TypeIcon';
 
-function ProductsTable({ products }: { products: (Product & { product_types: ProductType })[] }) {
+type Props = {
+  products: (Product & { product_types: ProductType })[];
+  onRemove?: (id: number) => void;
+};
+
+function ProductsTable({ products, onRemove }: Props) {
   const router = useRouter();
   const { isMobile } = useDeviceDetect();
-  const remove = async (id: number) => {
-    await axios.delete(`/api/products/${id}`);
-  };
 
-  const onRemove = (id: number) => {
-    toast.promise(remove(id), {
-      loading: 'Eliminando...',
-      success: <b>El producto se ha eliminado</b>,
-      error: <b>Ocurrió un error, vuelve a intentarlo</b>,
-    });
-  };
   return (
-    <div className="flex flex-col mt-2">
+    <div className="flex flex-col">
       <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
           <div className="overflow-hidden sm:rounded-lg">
@@ -69,7 +64,10 @@ function ProductsTable({ products }: { products: (Product & { product_types: Pro
                         <tr
                           key={Number(product.id)}
                           className="rounded-r-xl bg-white overflow-hidden flex flex-col flex-no wrap sm:table-row mb-2 sm:mb-0 hover:bg-zinc-100 cursor-pointer"
-                          onClick={() => router.push(`products/${Number(product.id)}`)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            router.push(`/products/${Number(product.id)}`);
+                          }}
                         >
                           <td className="p-4 text-sm text-zinc-800">{Number(product.id)}</td>
                           <td className="p-4 text-sm text-zinc-800">
@@ -97,9 +95,17 @@ function ProductsTable({ products }: { products: (Product & { product_types: Pro
                             <Link href={`/products/${product.id}`} className="text-zinc-800">
                               <Edit size={18} />
                             </Link>
-                            <button type="button" onClick={() => onRemove(Number(product.id))}>
-                              <Trash2 color="red" size={18} />
-                            </button>
+                            {onRemove && (
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onRemove(Number(product.id));
+                                }}
+                              >
+                                <Trash2 color="red" size={18} />
+                              </button>
+                            )}
                           </td>
                         </tr>
                       ))}
@@ -146,13 +152,18 @@ function ProductsTable({ products }: { products: (Product & { product_types: Pro
                             <Link href={`/products/${product.id}`} className="flex w-full">
                               <Button className="flex-1">Editar</Button>
                             </Link>
-                            <Button
-                              color="error"
-                              className="flex-1"
-                              onClick={() => onRemove(Number(product.id))}
-                            >
-                              Eliminar
-                            </Button>
+                            {onRemove && (
+                              <Button
+                                color="error"
+                                className="flex-1"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onRemove(Number(product.id));
+                                }}
+                              >
+                                Eliminar
+                              </Button>
+                            )}
                           </div>
                         </div>
                       </Collapse>
